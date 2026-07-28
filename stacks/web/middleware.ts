@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
-// Garante que toda request chega ao Server Component com a sessão já atualizada,
-// para que auth.uid() nunca fique "preso" numa sessão expirada.
+// Makes sure every request reaches the Server Component with an already-refreshed session,
+// so auth.uid() is never "stuck" on an expired session.
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 

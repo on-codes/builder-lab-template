@@ -1,0 +1,69 @@
+name: CI Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  quality-checks:
+    name: Lint, format, tests, secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Is there an app yet? A freshly created repo has no package.json until /setup runs,
+      # and the steps below would fail on an empty project.
+      - name: Detect app
+        id: app
+        run: |
+          if [ -f package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Without this, a missing lock file surfaces as a confusing cache error further down.
+      - name: Check the lock file was committed
+        if: steps.app.outputs.present == 'true'
+        run: |
+          if [ ! -f pnpm-lock.yaml ]; then
+            echo "::error::pnpm-lock.yaml is missing. Run 'pnpm install' locally and commit the pnpm-lock.yaml file it creates."
+            exit 1
+          fi
+
+      # pnpm is this project's package manager. The version comes from the
+      # "packageManager" field in package.json, so CI and your machine always match.
+      - uses: pnpm/action-setup@v4
+        if: steps.app.outputs.present == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.app.outputs.present == 'true'
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        if: steps.app.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (oxlint)
+        if: steps.app.outputs.present == 'true'
+        run: pnpm exec oxlint .
+
+      - name: Format check (oxfmt)
+        if: steps.app.outputs.present == 'true'
+        run: pnpm exec oxfmt --check .
+
+      - name: Unit tests
+        if: steps.app.outputs.present == 'true'
+        run: pnpm test
+
+      - name: Secret scan
+        run: bash .claude/hooks/check-secrets.sh
+
+      - name: Migration safety check
+        run: bash .claude/hooks/validate-migration.sh

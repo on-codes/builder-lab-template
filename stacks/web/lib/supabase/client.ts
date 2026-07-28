@@ -1,4 +1,4 @@
-// Browser client — usar em Client Components. Nunca colocar a service_role key aqui.
+// Browser client — use in Client Components. Never put the service_role key here.
 import { createBrowserClient } from '@supabase/ssr';
 
 export function createClient() {

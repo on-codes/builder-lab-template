@@ -1,84 +1,88 @@
 # BuilderLab Template
 
-Template para o workshop **"Build Your MVP with AI"** — pessoas sem experiência técnica
-constroem o MVP de uma ideia com o Claude, usando GitHub + Vercel/EAS + Supabase + Stripe.
+Template for the **"Build Your MVP with AI"** workshop — people with no technical background
+build the MVP of an idea with Claude, using GitHub + Vercel/EAS + Supabase + Stripe.
 
-## Como usar
+## How to use it
 
-1. Crie um repositório novo no GitHub a partir deste template (ou copie e cole todos os
-   arquivos deste repositório para o seu).
-2. Abra o projeto no Claude Code.
-3. Conecte os 4 MCPs: **GitHub**, **Vercel**, **Supabase** e **Stripe** (configuração já em
-   `.mcp.json` — o Claude Code vai pedir para autenticar cada um na primeira vez que forem
-   usados).
-4. Digite `/setup` e responda às duas perguntas (web ou mobile? qual é a ideia?). O Claude
-   monta o esqueleto do projeto a partir daí.
+1. Create a new GitHub repository from this template (or copy and paste every file from this
+   repository into yours).
+2. Open the project in Claude Code.
+3. Connect the 4 MCPs: **GitHub**, **Vercel**, **Supabase**, and **Stripe** (configuration is
+   already in `.mcp.json` — Claude Code will ask you to authenticate each one the first time
+   it is used).
+4. Type `/setup` and answer the two questions (web or mobile? what is the idea?). Claude builds
+   the project skeleton from there.
 
-Você não precisa entender o que está em `.claude/` para começar — essa pasta é para o
-Claude, não para você. O que importa: **o Claude já sabe como se comportar neste projeto**
-antes mesmo de você escrever a primeira mensagem.
+You don't need to understand what's inside `.claude/` to get started — that folder is for
+Claude, not for you. What matters: **Claude already knows how to behave in this project**
+before you even write your first message.
 
-## O que este template garante (sem você precisar pedir)
+## What this template guarantees (without you having to ask)
 
-- **Segurança do Supabase**: toda tabela nasce com Row Level Security habilitado, sessão e
-  cookies tratados corretamente, chave secreta nunca exposta no navegador/app.
-- **Migrations seguras**: mudanças no banco são sempre aditivas (nunca apagam ou reescrevem o
-  que já existe), então uma migration nunca quebra o que já está em produção.
-- **Deploy que se autocorrige**: se o deploy na Vercel quebrar, o Claude lê os logs sozinho
-  (via MCP) e corrige — você só é acionado se precisar colar uma chave que só você tem.
-- **Stripe no modo certo**: chaves de teste por padrão, webhooks validados, nenhum dado de
-  cartão passa pelo seu próprio código.
-- **Código sempre limpo**: `oxlint` + `oxfmt` rodam sozinhos a cada edição e antes de todo
+- **Supabase security**: every table is born with Row Level Security enabled, sessions and
+  cookies handled correctly, and the secret key never exposed to the browser/app.
+- **Safe migrations**: database changes are always additive (they never delete or rewrite what
+  already exists), so a migration can never break what's already in production.
+- **Self-healing deploys**: if a Vercel deploy breaks, Claude reads the logs on its own (via
+  MCP) and fixes it — you only get pulled in if a key that only you have needs to be pasted.
+- **Stripe in the right mode**: test keys by default, webhooks validated, and no card data ever
+  passes through your own code.
+- **Always-clean code**: `oxlint` + `oxfmt` run automatically on every edit and before every
   push.
-- **Nada quebra sem aviso**: todo push passa por lint, formatação, testes e uma varredura de
-  segredos antes de sair da sua máquina; o GitHub Actions roda os mesmos checks em toda PR.
-- **Chaves nunca vazam**: um hook bloqueia qualquer commit/push que contenha algo parecido com
-  uma chave de API real.
-- **Camadas de segurança da aplicação**: rate limiting em rotas públicas e limite de e-mails
-  por usuário já vêm prontos (`stacks/*/lib/rate-limit.ts` e
+- **Nothing breaks without warning**: every push goes through lint, formatting, tests, and a
+  secret scan before it leaves your machine; GitHub Actions runs the same checks on every PR.
+- **Keys never leak**: a hook blocks any commit/push containing something that looks like a
+  real API key.
+- **Application security layers**: rate limiting on public routes and a per-user email limit
+  come ready to use (`stacks/*/lib/rate-limit.ts` and
   `supabase/migrations/00000000000001_rate_limits.sql`).
 
-## Escolha 1: Web
+## Option 1: Web
 
-Next.js (App Router) + TypeScript + shadcn/ui + TanStack Query, deploy na Vercel.
-Referência de arquivos em `stacks/web/`.
+Next.js (App Router) + TypeScript + shadcn/ui + TanStack Query, deployed on Vercel.
+Reference files in `stacks/web/`.
 
-## Escolha 2: Mobile
+## Option 2: Mobile
 
-React Native + Expo + NativeWind (Tailwind), deploy via EAS.
-Referência de arquivos em `stacks/mobile/`.
+React Native + Expo + NativeWind (Tailwind), deployed via EAS.
+Reference files in `stacks/mobile/`.
 
-Backend e pagamento são sempre os mesmos nas duas opções: **Supabase** e **Stripe**.
+Backend and payments are always the same in both options: **Supabase** and **Stripe**.
 
-## Estrutura da pasta `.claude/`
+## Structure of the `.claude/` folder
 
 ```
 .claude/
-├── CLAUDE.md              # regras gerais do projeto — leitura obrigatória para o Claude
-├── settings.json          # liga os hooks de segurança/qualidade de verdade
-├── commands/               # comandos de barra (/setup, /new-feature, /new-migration, ...)
-├── skills/                  # guias detalhados por assunto (Supabase, migrations, Vercel,
-│                            # Stripe, qualidade de código, testes, segurança de app)
-├── agents/                  # subagentes especialistas (deploy, migrations, segurança)
-└── hooks/                   # scripts reais que bloqueiam segredos, migrations destrutivas,
-                              # e rodam lint/format/testes automaticamente
+├── CLAUDE.md              # general project rules — required reading for Claude
+├── settings.json          # actually wires up the security/quality hooks
+├── commands/               # slash commands (/setup, /new-feature, /new-migration, ...)
+├── skills/                  # detailed guides per topic (Supabase, migrations, Vercel,
+│                            # Stripe, code quality, testing, app security)
+├── agents/                  # specialist subagents (deploy, migrations, security)
+└── hooks/                   # real scripts that block secrets and destructive migrations,
+                              # and run lint/format/tests automatically
 ```
 
-## Comandos disponíveis
+## Available commands
 
-| Comando | O que faz |
+| Command | What it does |
 |---|---|
-| `/setup` | Pergunta web ou mobile e monta o esqueleto do projeto |
-| `/new-feature` | Fluxo padrão para construir uma funcionalidade do início ao fim |
-| `/new-migration` | Cria uma migration nova, sempre aditiva e com RLS |
-| `/fix-vercel-deploy` | Investiga e corrige um deploy quebrado |
-| `/pre-push-check` | Roda manualmente a checagem completa antes de um push |
-| `/security-audit` | Auditoria rápida de segurança do projeto inteiro |
+| `/setup` | Asks web or mobile and builds the project skeleton |
+| `/new-feature` | Standard flow for building a feature from start to finish |
+| `/new-migration` | Creates a new migration, always additive and with RLS |
+| `/fix-vercel-deploy` | Investigates and fixes a broken deploy |
+| `/pre-push-check` | Manually runs the full check before a push |
+| `/security-audit` | Quick security audit of the whole project |
 
-## Requisitos para quem vai facilitar o workshop
+## Requirements for whoever facilitates the workshop
 
-- Conta GitHub, Vercel (ou Expo/EAS), Supabase e Stripe já criadas para cada participante
-  (ou uma conta compartilhada, dependendo do formato do workshop).
-- Claude Code instalado, com os 4 MCPs deste `.mcp.json` conectados.
-- Node.js 20+ instalado (necessário para `npx create-next-app`/`create-expo-app`, `oxlint`,
-  `oxfmt`, `vitest`).
+- GitHub, Vercel (or Expo/EAS), Supabase, and Stripe accounts already created for each
+  participant (or a shared account, depending on the workshop format).
+- Claude Code installed, with the 4 MCPs from this `.mcp.json` connected.
+- Node.js 20+ installed (required for `create-next-app`/`create-expo-app`, `oxlint`, `oxfmt`,
+  `vitest`).
+- **pnpm** enabled — one command, once per machine: `corepack enable pnpm` (Corepack comes
+  with Node 20+). pnpm is the only package manager this template uses; `npm` and `yarn` are
+  blocked on purpose so that your machine, GitHub Actions, and Vercel always install exactly
+  the same versions.

@@ -1,5 +1,5 @@
--- Tabela + função de rate limiting, usada por lib/rate-limit.ts (web) e pelas Edge Functions.
--- Puramente aditiva: pode ser copiada como está para qualquer projeto novo do template.
+-- Rate limiting table + function, used by lib/rate-limit.ts (web) and by the Edge Functions.
+-- Purely additive: it can be copied as-is into any new project based on this template.
 
 create table if not exists public.rate_limits (
   key text primary key,
@@ -9,7 +9,7 @@ create table if not exists public.rate_limits (
 
 alter table public.rate_limits enable row level security;
 
--- Só o backend (service_role) mexe nessa tabela; nenhum client tem acesso direto.
+-- Only the backend (service_role) touches this table; no client has direct access.
 create policy "no direct client access"
   on public.rate_limits for all
   using (false)

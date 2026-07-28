@@ -1,5 +1,5 @@
--- Exemplo de referência — apague ou adapte para o domínio real do MVP sendo construído.
--- Mostra o padrão esperado: RLS habilitado + policy por operação, tudo na mesma migration.
+-- Reference example — delete it or adapt it to the real domain of the MVP being built.
+-- Shows the expected pattern: RLS enabled + one policy per operation, all in the same migration.
 
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),

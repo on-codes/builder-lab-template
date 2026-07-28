@@ -1,5 +1,5 @@
-// Cliente Supabase para Expo/React Native. Usa expo-secure-store (criptografado) em vez de
-// AsyncStorage puro, para nunca guardar o token de sessão em texto plano no dispositivo.
+// Supabase client for Expo/React Native. Uses expo-secure-store (encrypted) instead of plain
+// AsyncStorage, so the session token is never stored in plain text on the device.
 import { createClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 

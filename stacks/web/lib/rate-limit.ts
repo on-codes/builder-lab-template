@@ -1,5 +1,5 @@
-// Rate limiting simples baseado numa função Postgres atômica.
-// Ver supabase/migrations para a tabela `rate_limits` e a função `increment_rate_limit`.
+// Simple rate limiting backed by an atomic Postgres function.
+// See supabase/migrations for the `rate_limits` table and the `increment_rate_limit` function.
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export class RateLimitError extends Error {
@@ -21,7 +21,7 @@ export async function checkRateLimit(
   });
 
   if (error) {
-    // Falha "aberta": nunca derrubar a rota por causa do rate limiter em si.
+    // Fail open: never take the route down because of the rate limiter itself.
     console.error('rate limit check failed', error);
     return;
   }
@@ -32,6 +32,6 @@ export async function checkRateLimit(
 }
 
 export async function checkEmailSendLimit(supabase: SupabaseClient, userId: string) {
-  // Padrão do template: no máximo 5 e-mails transacionais por usuário por hora.
+  // Template default: at most 5 transactional emails per user per hour.
   await checkRateLimit(supabase, `email:${userId}`, 5, 3600);
 }
