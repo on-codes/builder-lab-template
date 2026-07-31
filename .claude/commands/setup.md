@@ -1,51 +1,75 @@
 ---
-description: Asks the initial questions and builds the project skeleton (web or mobile) from this template.
+description: Asks the initial question and builds the web dashboard skeleton from this template.
 ---
 
-You are starting a new project from the BuilderLab Template. Before writing any code:
+You are starting a new project from the BuilderLab Template. This template builds **one thing:
+a web dashboard** (Next.js + TypeScript + shadcn/ui + TanStack Query, deployed on Vercel).
+Don't ask which platform — there is no mobile track. If the person asks for a mobile app,
+explain that this template doesn't cover it and offer to build the dashboard instead.
 
-1. If you don't know yet, ask the person directly, in plain English:
-   "Do you want to build a **website/dashboard (web)** or a **mobile app**?"
-   And also: "In one sentence, what is the idea you want to validate?"
+## 1. Ask the one question that matters
 
-   Before running anything, make sure pnpm is available — this template's only package
-   manager. Run `corepack enable pnpm` if `pnpm --version` fails.
+Ask the person, in plain English:
 
-2. Depending on the answer:
-   - **Web**: run
-     `pnpm create next-app@latest . --typescript --tailwind --app --eslint=false --use-pnpm`
-     in the project directory, then add shadcn/ui (`pnpm dlx shadcn@latest init`) and TanStack
-     Query (`pnpm add @tanstack/react-query`). Copy the reference files from
-     `stacks/web/` to the root (`.env.example`, Supabase client config, etc.).
-   - **Mobile**: run `pnpm create expo-app@latest . --template blank-typescript --no-install`
-     (note `--no-install`), then create an `.npmrc` at the root containing
-     `node-linker=hoisted` — React Native's bundler can't follow pnpm's default symlinked
-     `node_modules`, so that line has to be in place *before* the first install — and only
-     then run `pnpm install`. Add NativeWind
-     (`pnpm exec expo install nativewind tailwindcss`) and TanStack Query. Copy the reference
-     files from `stacks/mobile/`. Commit the `.npmrc`; EAS builds need it too.
+> "In one sentence, what is the idea you want to validate?"
 
-3. In both cases:
-   - Run `pnpm --version` and add that exact version to `package.json` as
-     `"packageManager": "pnpm@X.Y.Z"`.
-     This is what pins the same pnpm version on the person's machine, in CI, and on Vercel.
-   - Commit `pnpm-lock.yaml` (never `package-lock.json` or `yarn.lock`).
-   - Install `oxlint` and `oxfmt` (`pnpm add -D oxlint oxfmt`) and add the scripts
-     `lint`, `lint:fix`, `format`, `format:fix` to `package.json` (see
-     `.claude/skills/code-quality/SKILL.md`).
-   - Install `vitest` (`pnpm add -D vitest`) and configure the `test`/`test:watch` scripts
-     (see `.claude/skills/testing/SKILL.md`).
-   - Create `supabase/migrations/` if it doesn't exist yet, with the first migration creating
-     the initial tables already with RLS enabled (see `.claude/skills/supabase-security/SKILL.md`
-     and `.claude/skills/safe-migrations/SKILL.md`).
-   - Copy `.env.example` to `.env.local` (web) or configure the Expo secrets (mobile) and
-     explain to the person, in 3-4 simple steps, where they can get the real keys (Supabase
-     dashboard → Project Settings → API; Stripe dashboard → Developers → API keys).
-   - Confirm that `.mcp.json` is present at the root and ask whether the 4 MCPs (GitHub,
-     Vercel, Supabase, Stripe) are already connected; if not, explain how to connect each one.
+## 2. Check the tools before running anything
 
-4. Finish with a short summary of what was created and the suggested next step (e.g.
-   "create the first screen" or "define the first database table").
+- `node --version` must be **24 or newer** (Node 24 is the current LTS, and what CI and
+  Vercel use). If it's older, stop and ask the person to install Node 24 LTS from nodejs.org —
+  it's the one step you can't do for them.
+- `pnpm --version` must be **11.18.0 or newer**. If the command fails or prints something
+  older, fix it yourself with:
+  `corepack enable pnpm && corepack prepare pnpm@11.18.0 --activate`
 
-Never skip the question in step 1 — mixing the two stacks in the same project breaks this
-template's conventions.
+pnpm is this template's only package manager — never `npm`, never `yarn`.
+
+## 3. Scaffold (sequential — nothing else runs during this)
+
+The scaffold owns the whole directory, and package installs can't overlap, so these two steps
+run alone, one after the other:
+
+1. `pnpm create next-app@latest . --typescript --tailwind --app --eslint=false --use-pnpm`
+2. One single install for everything the template needs (one command, not four — parallel or
+   back-to-back installs risk corrupting `pnpm-lock.yaml`):
+   `pnpm add @tanstack/react-query && pnpm add -D oxlint oxfmt vitest`
+   Then initialise shadcn/ui: `pnpm dlx shadcn@latest init`
+
+## 4. Wire it up (three agents at once)
+
+Now that `node_modules` exists and nothing else needs installing, spawn these three subagents
+**in a single message**, each with `run_in_background: true` and a name. They touch disjoint
+files, so they're safe to run together (see section 12 of `.claude/CLAUDE.md`):
+
+- **`tooling`** — owns `package.json` (nobody else edits it this round) and the tool configs.
+  Adds the `lint`, `lint:fix`, `format`, `format:fix` scripts
+  (`.claude/skills/code-quality/SKILL.md`) and the `test`/`test:watch` scripts plus the Vitest
+  config (`.claude/skills/testing/SKILL.md`). Also adds
+  `"engines": { "node": ">=24", "pnpm": ">=11.18.0" }` and sets
+  `"packageManager": "pnpm@X.Y.Z"` to the exact output of `pnpm --version` — that's what pins
+  the same pnpm on the person's machine, in CI, and on Vercel.
+- **`data`** — copies the reference files from `stacks/web/` into place (Supabase clients,
+  `middleware.ts`, `lib/rate-limit.ts`) and creates `supabase/migrations/` if missing, with the
+  first migration creating the initial tables **with RLS enabled from the start**
+  (`.claude/skills/supabase-security/SKILL.md` and `.claude/skills/safe-migrations/SKILL.md`).
+- **`env`** — copies `stacks/web/.env.example` to the root as `.env.example` and to
+  `.env.local`, confirms `.mcp.json` is at the root, and writes out (for you to relay) the
+  3-4 simple steps to get the real keys: Supabase dashboard → Project Settings → API; Stripe
+  dashboard → Developers → API keys. Never fills in a real key itself.
+
+## 5. Verify the combined result (you, not the agents)
+
+Wait for all three to report back, then run the checks yourself on the merged result:
+
+- `pnpm exec oxlint .` and `pnpm exec oxfmt --check .`
+- `pnpm test`
+- `bash .claude/hooks/check-secrets.sh`
+
+Fix anything that fails before moving on. An agent saying "done" isn't verification — the
+checks passing is. Commit `pnpm-lock.yaml` (never `package-lock.json` or `yarn.lock`).
+
+## 6. Wrap up
+
+Ask whether the 4 MCPs (GitHub, Vercel, Supabase, Stripe) are connected; if not, explain how
+to connect each one. Then give a short summary of what was created and the suggested next step
+(e.g. "create the first screen" or "define the first database table"), in plain English.

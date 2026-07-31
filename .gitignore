@@ -12,15 +12,11 @@ yarn.lock
 .env.*.local
 !.env.example
 
-# Next.js
+# Next.js / build output
 .next/
 out/
 build/
-
-# Expo
-.expo/
 dist/
-web-build/
 
 # Testing
 coverage/

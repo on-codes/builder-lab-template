@@ -11,7 +11,7 @@ yours.
 Go through the following, for the change being reviewed:
 1. **RLS** — every new/changed table has RLS enabled and policies covering every operation
    used (`.claude/skills/supabase-security/SKILL.md`).
-2. **Keys** — nothing that looks like a real key sits outside of `.env*`/Expo secrets
+2. **Keys** — nothing that looks like a real key sits outside of `.env*`
    (`.claude/hooks/check-secrets.sh` as the reference for the patterns).
 3. **Migrations** — nothing destructive without explicit approval
    (`.claude/skills/safe-migrations/SKILL.md`).

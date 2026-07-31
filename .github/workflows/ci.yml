@@ -40,10 +40,12 @@ jobs:
       - uses: pnpm/action-setup@v4
         if: steps.app.outputs.present == 'true'
 
+      # Node 24 is the current LTS and what this template standardises on, so CI, the
+      # person's machine, and Vercel all build on the same runtime.
       - uses: actions/setup-node@v4
         if: steps.app.outputs.present == 'true'
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies

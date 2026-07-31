@@ -25,7 +25,7 @@ pnpm exec oxfmt .             # write formatted files
 runs a binary already installed in `node_modules`; `pnpm dlx` is the equivalent of `npx` for
 a one-off tool that isn't a dependency.
 
-`package.json` scripts (both web and mobile stacks):
+`package.json` scripts:
 
 ```json
 {

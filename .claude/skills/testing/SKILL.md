@@ -1,14 +1,14 @@
 ---
 name: testing
-description: Use this skill whenever you finish building a feature (a route, Server Action, screen, business-logic function, or Supabase policy) — a feature isn't done until it has a passing unit test. Covers the Vitest setup shared by the web and mobile tracks.
+description: Use this skill whenever you finish building a feature (a route, Server Action, screen, business-logic function, or Supabase policy) — a feature isn't done until it has a passing unit test. Covers the Vitest setup used by this template.
 ---
 
 # Testing — every feature ships with a test
 
 ## Stack
 
-- **Vitest** for both tracks (works for Next.js server code and React Native/Expo logic
-  alike). React Testing Library for component-level tests where relevant.
+- **Vitest** for everything (Next.js server code and client logic alike). React Testing
+  Library for component-level tests where relevant.
 - Test files live next to the code: `feature.ts` → `feature.test.ts`.
 
 ## What must be tested

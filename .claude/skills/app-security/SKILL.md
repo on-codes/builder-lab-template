@@ -1,15 +1,16 @@
 ---
 name: app-security
-description: Use this skill when adding any public-facing route/action, any feature that sends email, or any place secrets/env vars are read or written. Covers rate limiting, per-user email send limits, input validation, and secret handling conventions shared across the web and mobile tracks.
+description: Use this skill when adding any public-facing route/action, any feature that sends email, or any place secrets/env vars are read or written. Covers rate limiting, per-user email send limits, input validation, and secret handling conventions for this template.
 ---
 
 # Application Security Layers
 
 ## Secrets
 
-- All secrets live in `.env.local` (web, git-ignored) or as EAS/Expo secrets (mobile) —
-  never hardcoded, never committed. `.env.example` in each stack lists the variable **names**
-  only, with placeholder values, so the person knows what to fill in.
+- All secrets live in `.env.local` (git-ignored) locally, and in the Vercel project's
+  environment variables for deploys — never hardcoded, never committed. `stacks/web/.env.example`
+  lists the variable **names** only, with placeholder values, so the person knows what to
+  fill in.
 - `.claude/hooks/check-secrets.sh` scans every diff before commit/push for patterns that look
   like live keys (`sk_live_`, `sk_test_`, long base64/hex strings assigned to variables named
   like secrets, Supabase JWTs, AWS-style keys, etc.) and blocks the operation if found outside
@@ -55,7 +56,7 @@ and runaway costs:
 ## Input validation
 
 - Validate every input at the boundary with **Zod** — Server Actions, Route Handlers, and
-  mobile form submissions all parse against a schema before touching the database.
+  form submissions all parse against a schema before touching the database.
 - Never trust an ID, price, or role passed from the client; re-derive from the authenticated
   session or look it up server-side.
 

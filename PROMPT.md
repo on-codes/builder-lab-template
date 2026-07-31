@@ -1,8 +1,12 @@
 You are helping a non-technical founder build the first version (MVP) of their app during a live workshop.
 
 ## Context
-This project uses the BuilderLab starter repository:
-https://github.com/on-codes/builder-lab
+This project is built on the BuilderLab starter template, which is distributed as a **.zip release** (not as a git repository to clone):
+
+- Release page: https://github.com/on-codes/builder-lab-template/releases/tag/1.0
+- Direct download: https://github.com/on-codes/builder-lab-template/archive/refs/tags/1.0.zip
+
+We are building a **WEB DASHBOARD** — Next.js (App Router) + TypeScript + shadcn/ui + TanStack Query, deployed on Vercel. There is no mobile app in scope, so don't ask me to choose a platform and don't propose React Native/Expo.
 
 Stack (all managed through MCP — do not use CLI commands or ask me to log into dashboards manually):
 - Hosting: Vercel (via MCP)
@@ -10,29 +14,37 @@ Stack (all managed through MCP — do not use CLI commands or ask me to log into
 - Payments: Stripe (via MCP)
 - Source control: GitHub (via MCP)
 
+Tooling requirements: **Node.js 24+ (current LTS)** and **pnpm 11.18.0 or newer**. pnpm is the only package manager allowed here — never `npm` or `yarn`.
+
 ## Step 0 — Check MCP connections
 Before anything else, check which MCP tools you currently have access to for GitHub, Supabase, Stripe, and Vercel.
 
 - If any of these are missing, tell me clearly which one is not connected and ask me to connect it before continuing.
 - Do not fall back to manual CLI setup, terminal commands, or asking me to click through a web dashboard for anything these MCP tools can do. MCP is the only path for these actions.
 
-## Step 1 — Ask before doing anything else
-Once all required MCP tools are confirmed, ask me directly:
-"Are we building a WEB DASHBOARD or a MOBILE APP for this project?"
-
-Wait for my answer. Do not proceed until I respond.
-
-## Step 2 — Copy the .claude configuration (mandatory, do this first)
+## Step 1 — Install the starter template from the .zip (mandatory, do this first)
 This is the most important setup step. Before writing any application code:
 
-1. Using the GitHub MCP tools, inspect the builder-lab repository and locate the `.claude` folder (and any `CLAUDE.md` file) for the platform I chose (dashboard or mobile) — it may be at the repo root or inside a platform-specific folder/branch.
-2. Copy that `.claude` folder (and `CLAUDE.md` if present) into the root of this new project, exactly as-is. Do not modify, skip, or "summarize" its contents — these files contain rules and restrictions that must apply to this project.
-3. Confirm to me that the `.claude` folder has been copied and briefly tell me what restrictions/rules it sets, so I know they're active.
-4. Only after this is done, identify and use the correct starter template/branch/folder for the platform I chose as the base for the rest of the project. If it's not obvious which template matches, list what you find and ask me to confirm.
+1. Check whether the template is already here: if `.claude/CLAUDE.md` exists at the root of this project, the template is already installed — confirm that to me and go straight to Step 2.
+2. If it isn't here, download and extract the release .zip yourself, from the project root:
+   ```bash
+   curl -L -o /tmp/builder-lab-template.zip https://github.com/on-codes/builder-lab-template/archive/refs/tags/1.0.zip
+   unzip -q -o /tmp/builder-lab-template.zip -d /tmp
+   cp -R /tmp/builder-lab-template-1.0/.claude \
+         /tmp/builder-lab-template-1.0/.github \
+         /tmp/builder-lab-template-1.0/.mcp.json \
+         /tmp/builder-lab-template-1.0/.gitignore \
+         /tmp/builder-lab-template-1.0/supabase \
+         /tmp/builder-lab-template-1.0/stacks .
+   ```
+   (These shell commands are expected and allowed — the .zip is a plain file download, not one of the MCP-managed services above.)
+3. Everything lands exactly as-is. Do not modify, skip, or "summarize" any of it — these files contain rules and restrictions that must apply to this project. If a file already exists here, show me the difference and ask before overwriting it.
+4. Do **not** clone the repository, do not fetch these files through the GitHub MCP, and do not rewrite them from memory. The .zip above is the only source, so that every participant runs exactly the same pinned version of the template.
+5. Confirm to me that `.claude/` is in place and briefly tell me what restrictions/rules it sets, so I know they're active.
 
-Do not proceed to Step 3 until the `.claude` folder is confirmed in place.
+Do not proceed to Step 2 until the `.claude` folder is confirmed in place.
 
-## Step 3 — My app idea (Blueprint)
+## Step 2 — My app idea (Blueprint)
 Paste your Blueprint below. This already contains the problem, target user, value proposition, and MVP scope from the BuilderLab process — use it as the source of truth for what to build.
 
 **Blueprint:**
@@ -40,16 +52,17 @@ Paste your Blueprint below. This already contains the problem, target user, valu
 
 If anything critical is missing or unclear from the Blueprint to actually build the app (e.g. whether it needs user login, or whether it needs payments), ask me directly — but don't ask about things the Blueprint already answers.
 
-## Step 4 — Build plan (all via MCP)
-Based on the Blueprint above, and respecting the rules in the `.claude` folder copied in Step 2:
+## Step 3 — Build plan (all via MCP, several agents at once)
+Based on the Blueprint above, and respecting the rules in the `.claude` folder installed in Step 1:
 1. Propose a simple data model (tables/fields) and set it up in Supabase using the Supabase MCP tools. Set up auth via Supabase MCP if the Blueprint requires user login.
 2. Propose the minimal set of screens/pages needed to demonstrate the core features.
 3. If the Blueprint requires payments, set up Stripe test-mode products/prices using the Stripe MCP tools. Never use live/production Stripe keys during the workshop.
-4. Build the app incrementally, screen by screen, showing me progress after each step rather than doing everything silently.
-5. Push code to GitHub using the GitHub MCP tools as you go, with clear commit messages.
-6. Deploy to Vercel using the Vercel MCP tools once the MVP is working.
+4. **Run independent work in parallel.** Once the project skeleton exists, don't build one thing at a time: spawn several named background subagents **in a single message** and let them work simultaneously — for example one on the Supabase schema + RLS policies, one on screen A, one on screen B, one on the Stripe test-mode wiring. Section 12 of `.claude/CLAUDE.md` has the full rules on what may run in parallel and what must not (same file, same table, package installs, and git operations always stay sequential).
+5. Show me progress after each finished piece rather than doing everything silently, and tell me in plain language when several things are running at once.
+6. Push code to GitHub using the GitHub MCP tools as you go, with clear commit messages.
+7. Deploy to Vercel using the Vercel MCP tools once the MVP is working.
 
-## Step 5 — Constraints
+## Step 4 — Constraints
 - The rules in the `.claude` folder always take priority — never bypass or work around them, even if it would be faster.
 - This is a live workshop with limited time — prioritize a working, demoable MVP over completeness or polish.
 - Don't add features that aren't in the Blueprint.

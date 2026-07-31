@@ -9,29 +9,31 @@ Treat every sentence below as a rule, not a suggestion.
 
 ## 0. First thing to do on a new project
 
-If the `app/` (or `src/`) directory doesn't exist yet, **don't** assume anything: run the
-`/setup` command (see `.claude/commands/setup.md`) or ask the person directly:
+If the `app/` (or `src/`) directory doesn't exist yet, run the `/setup` command (see
+`.claude/commands/setup.md`) to build the skeleton. There is nothing to ask about the
+platform: this template builds **one thing only — a web dashboard**. Ask the person just for
+the idea they want to validate, in one sentence.
 
-> "Do you want to build a **website/dashboard (web)** or a **mobile app**?"
+## 1. Supported stack (don't deviate)
 
-The answer defines the stack (see section 1) and must never be assumed by Claude without
-confirmation, because it changes the whole project structure.
-
-## 1. Supported stacks (don't deviate)
-
-| | Web (dashboard/site) | Mobile (app) |
-|---|---|---|
-| Framework | Next.js (App Router) + TypeScript | React Native + Expo |
-| UI | shadcn/ui + Tailwind | NativeWind (Tailwind for RN) |
-| Data fetching / cache | TanStack Query | TanStack Query |
-| Deploy | Vercel | EAS (Expo Application Services) |
-| Backend | Supabase (always) | Supabase (always) |
-| Payments | Stripe (always) | Stripe (always) |
-| Package manager | pnpm (always) | pnpm (always) |
+| | Web dashboard |
+|---|---|
+| Framework | Next.js (App Router) + TypeScript |
+| UI | shadcn/ui + Tailwind |
+| Data fetching / cache | TanStack Query |
+| Deploy | Vercel |
+| Backend | Supabase (always) |
+| Payments | Stripe (always) |
+| Package manager | pnpm (always) |
 
 Never suggest another framework, another backend, or another payment provider — even if the
 person asks for something "simpler." If they ask, briefly explain why the template uses this
 stack (it's the one that's tested, with hooks and skills ready to go) and continue with it.
+
+If the person asks for a **mobile app**, say clearly that this template doesn't cover it: the
+whole toolkit (hooks, skills, agents, CI, reference files) is built and tested for the web
+dashboard only. Offer to build the dashboard instead — never improvise a React Native/Expo
+setup on top of this template.
 
 ### 1.1 pnpm is the only package manager
 
@@ -39,6 +41,16 @@ A "package manager" is the tool that installs the project's building blocks. Thi
 uses **pnpm** everywhere — the person's machine, GitHub Actions, and Vercel — so that all
 three install exactly the same versions.
 
+- **Minimum version: pnpm 11.18.0.** Anything older is not supported here. Check with
+  `pnpm --version` before the first install and before any troubleshooting; if it prints
+  something lower (or the command isn't found), fix it with one command:
+  `corepack enable pnpm && corepack prepare pnpm@11.18.0 --activate`.
+- **Node.js 24 (the current LTS)** is what this template runs on — locally, in GitHub
+  Actions, and on Vercel, which supports 24.x. pnpm 11 technically floors at Node 22.13, but
+  22 is already in maintenance-only mode, so 24 is the version to install and the one the
+  checks expect. If `node --version` is below 24, the person updates Node first (nodejs.org,
+  LTS installer) — nothing else will work until then, and it's the one setup step Claude
+  can't do for them.
 - Never run `npm` or `yarn` in this project. They would create a second lock file
   (`package-lock.json` / `yarn.lock`), and from that point on "works on my machine" and
   "works in production" stop meaning the same thing. `.claude/settings.json` denies those
@@ -57,13 +69,12 @@ three install exactly the same versions.
 
 - `pnpm-lock.yaml` is **always committed**. CI installs with `--frozen-lockfile`, so a
   missing or stale lock file turns the checks red.
-- `package.json` carries a `"packageManager": "pnpm@<version>"` field. That single line is
-  what pins the same pnpm version in CI and on Vercel — never delete it.
-- If `pnpm` isn't installed on the person's machine, the fix is one command:
-  `corepack enable pnpm` (Corepack ships with Node 20+).
-- **Mobile only**: Expo/React Native needs `node-linker=hoisted` in an `.npmrc` at the
-  project root, because Metro (the bundler) can't follow pnpm's default symlinked
-  `node_modules`. Set it before the first install.
+- `package.json` carries a `"packageManager": "pnpm@<version>"` field (11.18.0 or newer).
+  That single line is what pins the same pnpm version in CI and on Vercel — never delete it,
+  and never point it at a version below the minimum above.
+- `package.json` also carries `"engines": { "node": ">=24", "pnpm": ">=11.18.0" }`. pnpm
+  enforces `engines` by default, so a machine or build environment that's too old fails
+  loudly and immediately instead of failing weirdly halfway through.
 
 ## 2. Golden rule: zero technical intervention from the person
 
@@ -81,7 +92,7 @@ it.
 ## 3. Secrets and keys — they never go to GitHub
 
 - Every key (Supabase service_role, Stripe secret key, API tokens, etc.) lives **only** in
-  `.env.local` (web) or in `.env`/`app.config.ts` via `expo-secrets`/EAS secrets (mobile),
+  `.env.local` locally and in the Vercel project's environment variables for deploys —
   never in code, never in a commit, never in a log printed to the terminal.
   Technical details in `.claude/skills/app-security/SKILL.md`.
 - Before any `git commit` or `git push`, the security hooks
@@ -101,8 +112,7 @@ accesses user data. Summary of the non-negotiable rules:
 - Authentication always via Supabase Auth. Sessions/cookies handled with the `@supabase/ssr`
   package (never store a token manually in `localStorage` on web).
 - No database call from the client using the `service_role key`. That key only exists in
-  Server Actions / Route Handlers / Edge Functions, never in code that runs in the browser or
-  in the mobile app bundle.
+  Server Actions / Route Handlers / Edge Functions, never in code that runs in the browser.
 - Every new policy is tested (see section 6) before being considered done.
 
 ## 5. Migrations — always additive, never destructive
@@ -178,3 +188,56 @@ to be connected (never make up data).
   After that, it's fine to use the term directly.
 - Always confirm before: pushing to the remote repository, changing anything in production, or
   using a Stripe `live` key.
+
+## 12. Working in parallel — several agents at once
+
+Workshop time is short. Whenever there are two or more pieces of work that don't depend on
+each other, **run them at the same time** instead of one after another.
+
+### How to do it
+
+- Spawn all the subagents for a round **in a single message**, each with `name:` and
+  `run_in_background: true`. Multiple `Agent` calls in one message run concurrently; calls
+  spread across separate messages don't.
+- Give every agent a name that says what it owns (`schema`, `screen-dashboard`,
+  `screen-settings`, `stripe`) and an explicit, non-overlapping list of files it may touch.
+- Tell each agent who to report to. For a chain (build → test → review), have each one
+  `SendMessage` the next; for independent work, let them all report back here.
+- Prefer the specialists already defined in `.claude/agents/` when they fit:
+  `migration-guardian` (schema), `security-reviewer` (auth/data/payments/public routes),
+  `deploy-doctor` (broken Vercel deploys).
+
+### Safe to run in parallel
+
+- Different screens, routes, or components — one agent per file or per screen.
+- A migration for table A while another agent builds UI that doesn't read table A yet.
+- Reading/researching anything (logs via MCP, existing code, Supabase state).
+- Writing tests for code that is already finished, while another agent builds something else.
+- A `security-reviewer` pass over finished code while the next feature is being built.
+
+### Never in parallel — these stay sequential, no exceptions
+
+- **Two agents editing the same file.** The second write silently overwrites the first.
+- **Package installs.** Only one `pnpm add` / `pnpm install` at a time, ever — two at once
+  corrupt `pnpm-lock.yaml`, and a corrupt lock file breaks CI and Vercel at the same moment.
+  Batch the dependencies into one command instead.
+- **The initial scaffold.** `pnpm create next-app` owns the whole directory; nothing else runs
+  until it's finished.
+- **`package.json`.** One agent owns it per round; the others ask that agent for changes.
+- **Migrations touching the same table**, and any two migrations created in the same round —
+  file-name timestamps and column changes collide.
+- **git operations.** One commit or push at a time; the hooks run per operation and two at
+  once produce a broken index.
+
+### After a parallel round
+
+1. Wait for every agent to report — never assume a background agent finished.
+2. Re-run the checks yourself on the combined result: `/pre-push-check` (lint, format, tests,
+   secret scan). Subagents reporting "done" is not verification; the checks passing is.
+3. Only then commit, and summarize to the person what came out of the round.
+
+### What to tell the person
+
+Say it in plain language before starting — "I'm going to build three parts at the same time:
+the database, the dashboard screen, and the login" — and again when the round lands. Never
+leave them staring at a silent screen while agents work in the background.
