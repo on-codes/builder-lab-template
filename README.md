@@ -1,7 +1,7 @@
 # BuilderLab Template
 
 Template for the **"Build Your MVP with AI"** workshop — people with no technical background
-build the MVP of an idea with Claude, using GitHub + Vercel + Supabase + Stripe.
+build the MVP of an idea with Claude, using GitHub + Vercel + Supabase.
 
 It builds **one thing: a web dashboard** (Next.js on Vercel). That's deliberate — one tested
 path, no platform decisions to make on the day.
@@ -13,9 +13,10 @@ path, no platform decisions to make on the day.
    ([direct download](https://github.com/on-codes/builder-lab-template/archive/refs/tags/1.0.zip))
    — no git clone needed, and everyone in the room runs exactly the same pinned version.
 2. Open the project in Claude Code.
-3. Connect the 4 MCPs: **GitHub**, **Vercel**, **Supabase**, and **Stripe** (configuration is
-   already in `.mcp.json` — Claude Code will ask you to authenticate each one the first time
-   it is used).
+3. Connect the 3 MCPs: **GitHub**, **Vercel**, and **Supabase** (configuration is already in
+   `.mcp.json` — Claude Code will ask you to authenticate each one the first time it is used).
+   You do **not** need a Stripe account: payments are optional here, and only get set up if
+   your idea actually charges money.
 4. Type `/setup` and answer the one question (what is the idea?). Claude builds the project
    skeleton from there.
 
@@ -34,8 +35,10 @@ before you even write your first message.
   already exists), so a migration can never break what's already in production.
 - **Self-healing deploys**: if a Vercel deploy breaks, Claude reads the logs on its own (via
   MCP) and fixes it — you only get pulled in if a key that only you have needs to be pasted.
-- **Stripe in the right mode**: test keys by default, webhooks validated, and no card data ever
-  passes through your own code.
+- **Payments only if you need them**: nothing here assumes you're charging anyone, so there's
+  no Stripe account to create and no payment code in the way. If your idea does need it, Claude
+  adds Stripe on the spot — test keys by default, webhooks validated, and no card data ever
+  passing through your own code.
 - **Always-clean code**: `oxlint` + `oxfmt` run automatically on every edit and before every
   push.
 - **Nothing breaks without warning**: every push goes through lint, formatting, tests, and a
@@ -46,13 +49,14 @@ before you even write your first message.
   come ready to use (`stacks/web/lib/rate-limit.ts` and
   `supabase/migrations/00000000000001_rate_limits.sql`).
 - **Several things at once**: for independent work, Claude runs multiple agents in parallel
-  (database, screens, payments) instead of building one piece at a time — with explicit rules
+  (database, screens, login) instead of building one piece at a time — with explicit rules
   about what must never overlap (see section 12 of `.claude/CLAUDE.md`).
 
 ## The stack
 
 Next.js (App Router) + TypeScript + shadcn/ui + TanStack Query, deployed on Vercel.
-Backend is always **Supabase**, payments are always **Stripe**.
+Backend is always **Supabase**. Payments are optional — and when an idea does need them, the
+provider is always **Stripe**.
 Reference files live in `stacks/web/`.
 
 ## Structure of the `.claude/` folder
@@ -63,7 +67,7 @@ Reference files live in `stacks/web/`.
 ├── settings.json          # actually wires up the security/quality hooks
 ├── commands/               # slash commands (/setup, /new-feature, /new-migration, ...)
 ├── skills/                  # detailed guides per topic (Supabase, migrations, Vercel,
-│                            # Stripe, code quality, testing, app security)
+│                            # optional Stripe, code quality, testing, app security)
 ├── agents/                  # specialist subagents (deploy, migrations, security)
 └── hooks/                   # real scripts that block secrets and destructive migrations,
                               # and run lint/format/tests automatically
@@ -82,9 +86,10 @@ Reference files live in `stacks/web/`.
 
 ## Requirements for whoever facilitates the workshop
 
-- GitHub, Vercel, Supabase, and Stripe accounts already created for each participant (or a
-  shared account, depending on the workshop format).
-- Claude Code installed, with the 4 MCPs from this `.mcp.json` connected.
+- GitHub, Vercel, and Supabase accounts already created for each participant (or a shared
+  account, depending on the workshop format). A Stripe account is **not** required — only
+  bother if someone is genuinely going to charge for something.
+- Claude Code installed, with the 3 MCPs from this `.mcp.json` connected.
 - **Node.js 24 or newer** installed (`node --version` to check) — Node 24 is the current LTS,
   and it's what GitHub Actions and Vercel build with here. Anything older fails at the first
   install, on purpose: the whole point is that your machine, CI, and production run the same

@@ -19,8 +19,8 @@ description: Use this skill whenever you finish building a feature (a route, Ser
   authenticated test clients, or the `supabase-js` client with different JWTs).
 - Any pricing/business-logic function (totals, discounts, subscription state transitions):
   cover the normal case and at least one edge case (zero, negative, boundary).
-- Stripe webhook handlers: test with a sample event payload, and a test that an invalid
-  signature is rejected.
+- Stripe webhook handlers, if the project has any (payments are optional here): test with a
+  sample event payload, and a test that an invalid signature is rejected.
 
 ## Commands
 

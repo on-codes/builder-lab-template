@@ -11,13 +11,15 @@ We are building a **WEB DASHBOARD** — Next.js (App Router) + TypeScript + shad
 Stack (all managed through MCP — do not use CLI commands or ask me to log into dashboards manually):
 - Hosting: Vercel (via MCP)
 - Database/Auth: Supabase (via MCP)
-- Payments: Stripe (via MCP)
 - Source control: GitHub (via MCP)
+
+Payments are **not** part of the default setup — I don't have (and don't need) a Stripe
+account. Only bring Stripe up if the Blueprint below clearly requires charging money.
 
 Tooling requirements: **Node.js 24+ (current LTS)** and **pnpm 11.18.0 or newer**. pnpm is the only package manager allowed here — never `npm` or `yarn`.
 
 ## Step 0 — Check MCP connections
-Before anything else, check which MCP tools you currently have access to for GitHub, Supabase, Stripe, and Vercel.
+Before anything else, check which MCP tools you currently have access to for GitHub, Supabase, and Vercel.
 
 - If any of these are missing, tell me clearly which one is not connected and ask me to connect it before continuing.
 - Do not fall back to manual CLI setup, terminal commands, or asking me to click through a web dashboard for anything these MCP tools can do. MCP is the only path for these actions.
@@ -56,8 +58,8 @@ If anything critical is missing or unclear from the Blueprint to actually build 
 Based on the Blueprint above, and respecting the rules in the `.claude` folder installed in Step 1:
 1. Propose a simple data model (tables/fields) and set it up in Supabase using the Supabase MCP tools. Set up auth via Supabase MCP if the Blueprint requires user login.
 2. Propose the minimal set of screens/pages needed to demonstrate the core features.
-3. If the Blueprint requires payments, set up Stripe test-mode products/prices using the Stripe MCP tools. Never use live/production Stripe keys during the workshop.
-4. **Run independent work in parallel.** Once the project skeleton exists, don't build one thing at a time: spawn several named background subagents **in a single message** and let them work simultaneously — for example one on the Supabase schema + RLS policies, one on screen A, one on screen B, one on the Stripe test-mode wiring. Section 12 of `.claude/CLAUDE.md` has the full rules on what may run in parallel and what must not (same file, same table, package installs, and git operations always stay sequential).
+3. Skip payments unless the Blueprint clearly requires charging money. If it does, tell me first — Stripe is not connected by default, so we'd need to add its MCP and I'd need a Stripe account. Even then, only test mode: never use live/production Stripe keys during the workshop.
+4. **Run independent work in parallel.** Once the project skeleton exists, don't build one thing at a time: spawn several named background subagents **in a single message** and let them work simultaneously — for example one on the Supabase schema + RLS policies, one on screen A, one on screen B, one on the login flow. Section 12 of `.claude/CLAUDE.md` has the full rules on what may run in parallel and what must not (same file, same table, package installs, and git operations always stay sequential).
 5. Show me progress after each finished piece rather than doing everything silently, and tell me in plain language when several things are running at once.
 6. Push code to GitHub using the GitHub MCP tools as you go, with clear commit messages.
 7. Deploy to Vercel using the Vercel MCP tools once the MVP is working.
@@ -67,4 +69,4 @@ Based on the Blueprint above, and respecting the rules in the `.claude` folder i
 - This is a live workshop with limited time — prioritize a working, demoable MVP over completeness or polish.
 - Don't add features that aren't in the Blueprint.
 - Explain what you're doing in plain, non-technical language as you go, since I don't have a coding background.
-- Everything must go through the connected MCP tools (GitHub, Supabase, Stripe, Vercel). If something can't be done via MCP, stop and tell me exactly what's missing instead of improvising a manual workaround.
+- Everything must go through the connected MCP tools (GitHub, Supabase, Vercel). If something can't be done via MCP, stop and tell me exactly what's missing instead of improvising a manual workaround.

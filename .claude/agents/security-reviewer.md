@@ -17,8 +17,8 @@ Go through the following, for the change being reviewed:
    (`.claude/skills/safe-migrations/SKILL.md`).
 4. **Rate limiting / email** — public routes and email sends respect the defined limits
    (`.claude/skills/app-security/SKILL.md`).
-5. **Stripe** — test keys by default, webhook validates the signature
-   (`.claude/skills/stripe-billing/SKILL.md`).
+5. **Payments (only if the project has Stripe code at all — usually it doesn't)** — test keys
+   by default, webhook validates the signature (`.claude/skills/stripe-billing/SKILL.md`).
 
 If you find a problem, fix it yourself when it's straightforward (e.g. a missing policy) or go
 back to the main agent with a short, specific list of what's missing, so they can resolve it

@@ -13,7 +13,8 @@ Go through the checklist below and report each item as ✅ or ❌ with what's mi
 4. **Rate limiting** — every public route (Route Handler / Server Action / Edge Function) uses
    `checkRateLimit` or an equivalent (`.claude/skills/app-security/SKILL.md`).
 5. **Emails** — any email sending respects the per-user limit defined in the project.
-6. **Stripe** — test keys in use (unless the person has already confirmed live mode); the
+6. **Payments** — skip this item entirely if the project has no Stripe code (the normal case).
+   If it does: test keys in use (unless the person has already confirmed live mode), and the
    webhook validates the signature.
 7. **Tests** — minimum coverage exists for the database policies and the critical routes.
 

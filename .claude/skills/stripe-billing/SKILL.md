@@ -1,11 +1,29 @@
 ---
 name: stripe-billing
-description: Use this skill whenever you set up or modify Stripe checkout, subscriptions, webhooks, or any payment-related code. Keeps scope minimal and safe for non-technical founders handling real money.
+description: Use this skill only when the person has explicitly asked for payments — Stripe is optional in this template and off by default. Covers checkout, subscriptions, webhooks, and any payment-related code, keeping scope minimal and safe for non-technical founders handling real money.
 ---
 
-# Stripe — minimum necessary surface
+# Stripe — optional, and minimum necessary surface
 
-Only implement what's needed to charge for the product being built. Don't build a generic
+## Before anything: is Stripe even wanted?
+
+Payments are **not** part of this template's default setup. Nobody needs a Stripe account to
+build, test, and deploy the dashboard, so:
+
+- Don't add Stripe because the idea "might charge one day." Only when the person explicitly
+  asks to take money now.
+- Once they do, add the Stripe MCP to `.mcp.json` (it isn't there by default) and ask them to
+  connect it — Claude Code will prompt for authentication the first time it's used:
+  ```json
+  "stripe": {
+    "type": "http",
+    "url": "https://mcp.stripe.com"
+  }
+  ```
+- The `stacks/web/.env.example` file already lists the Stripe variables; they stay empty and
+  unused until now. Fill them in only at this point, and only with test keys.
+
+Then implement only what's needed to charge for the product being built. Don't build a generic
 billing platform.
 
 ## Keys & modes

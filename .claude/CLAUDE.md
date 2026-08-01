@@ -23,12 +23,15 @@ the idea they want to validate, in one sentence.
 | Data fetching / cache | TanStack Query |
 | Deploy | Vercel |
 | Backend | Supabase (always) |
-| Payments | Stripe (always) |
+| Payments | None by default — Stripe only if the app really charges (see section 8) |
 | Package manager | pnpm (always) |
 
-Never suggest another framework, another backend, or another payment provider — even if the
-person asks for something "simpler." If they ask, briefly explain why the template uses this
-stack (it's the one that's tested, with hooks and skills ready to go) and continue with it.
+Never suggest another framework or another backend — even if the person asks for something
+"simpler." If they ask, briefly explain why the template uses this stack (it's the one that's
+tested, with hooks and skills ready to go) and continue with it. Payments are the one optional
+piece: most MVPs here don't charge anyone, and nobody needs a Stripe account to build, test,
+and deploy a dashboard. If payments do turn out to be in scope, the provider is Stripe — never
+another one.
 
 If the person asks for a **mobile app**, say clearly that this template doesn't cover it: the
 whole toolkit (hooks, skills, agents, CI, reference files) is built and tested for the web
@@ -156,9 +159,17 @@ If a deploy fails (the person will just paste the link or say "it broke"), Claud
    because it's a secret Claude can't see) when it's strictly necessary — and in that case
    gives the exact step-by-step, described in plain words.
 
-## 8. Stripe — only what's necessary
+## 8. Payments — optional, and off by default
 
-See `.claude/skills/stripe-billing/SKILL.md`. Short rules:
+**Don't set up payments unless the person explicitly asks for them.** Don't ask anyone to
+create a Stripe account, don't add Stripe env vars, and don't scaffold checkout "just in case."
+An MVP that only proves the idea works doesn't need to charge anybody.
+
+If (and only if) the project really does need to take money, it goes through **Stripe** —
+never another provider — and `.claude/skills/stripe-billing/SKILL.md` has the details. Short
+rules:
+- The Stripe MCP is **not** in `.mcp.json` by default. Add it only once payments are actually
+  in scope, and then ask the person to connect it (the exact entry is in the skill).
 - Test keys (`sk_test_...`) during the workshop; never use a `live` key without the person
   explicitly confirming they're ready to charge for real.
 - Stripe webhooks always validated with the signature (`stripe.webhooks.constructEvent`),
@@ -176,10 +187,13 @@ See `.claude/skills/app-security/SKILL.md` for the reference implementations:
 
 ## 10. Connected MCPs
 
-This template expects the following MCP servers to be connected (config in `.mcp.json` at the
-root): GitHub, Vercel, Supabase, and Stripe. Use them to read real state (deployments, tables,
-logs, invoices) instead of assuming. If an MCP tool isn't available, tell the person it needs
-to be connected (never make up data).
+This template expects three MCP servers to be connected (config in `.mcp.json` at the root):
+GitHub, Vercel, and Supabase. Use them to read real state (deployments, tables, logs) instead
+of assuming. If an MCP tool isn't available, tell the person it needs to be connected (never
+make up data).
+
+Stripe is deliberately **not** in that list — it only enters the picture if the project charges
+money (section 8), and it gets added to `.mcp.json` at that point, not before.
 
 ## 11. How to talk to the person
 
@@ -200,7 +214,7 @@ each other, **run them at the same time** instead of one after another.
   `run_in_background: true`. Multiple `Agent` calls in one message run concurrently; calls
   spread across separate messages don't.
 - Give every agent a name that says what it owns (`schema`, `screen-dashboard`,
-  `screen-settings`, `stripe`) and an explicit, non-overlapping list of files it may touch.
+  `screen-settings`, `auth`) and an explicit, non-overlapping list of files it may touch.
 - Tell each agent who to report to. For a chain (build → test → review), have each one
   `SendMessage` the next; for independent work, let them all report back here.
 - Prefer the specialists already defined in `.claude/agents/` when they fit:

@@ -54,8 +54,10 @@ files, so they're safe to run together (see section 12 of `.claude/CLAUDE.md`):
   (`.claude/skills/supabase-security/SKILL.md` and `.claude/skills/safe-migrations/SKILL.md`).
 - **`env`** — copies `stacks/web/.env.example` to the root as `.env.example` and to
   `.env.local`, confirms `.mcp.json` is at the root, and writes out (for you to relay) the
-  3-4 simple steps to get the real keys: Supabase dashboard → Project Settings → API; Stripe
-  dashboard → Developers → API keys. Never fills in a real key itself.
+  simple steps to get the real keys: Supabase dashboard → Project Settings → API. Never fills
+  in a real key itself. The Stripe block in `.env.example` stays empty — payments are off by
+  default (section 8 of `.claude/CLAUDE.md`), so never ask the person for Stripe keys during
+  setup.
 
 ## 5. Verify the combined result (you, not the agents)
 
@@ -70,6 +72,7 @@ checks passing is. Commit `pnpm-lock.yaml` (never `package-lock.json` or `yarn.l
 
 ## 6. Wrap up
 
-Ask whether the 4 MCPs (GitHub, Vercel, Supabase, Stripe) are connected; if not, explain how
-to connect each one. Then give a short summary of what was created and the suggested next step
+Ask whether the 3 MCPs (GitHub, Vercel, Supabase) are connected; if not, explain how to
+connect each one. Don't mention Stripe — nobody needs a Stripe account to build here, and
+payments only come up if the idea actually charges money. Then give a short summary of what was created and the suggested next step
 (e.g. "create the first screen" or "define the first database table"), in plain English.
