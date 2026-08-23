@@ -116,6 +116,54 @@ export type Database = {
         };
         Relationships: [];
       };
+      subscriptions: {
+        Row: {
+          user_id: string;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          status: Database["public"]["Enums"]["subscription_status"] | null;
+          plan: string | null;
+          current_period_end: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          status?: Database["public"]["Enums"]["subscription_status"] | null;
+          plan?: string | null;
+          current_period_end?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          status?: Database["public"]["Enums"]["subscription_status"] | null;
+          plan?: string | null;
+          current_period_end?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      processed_stripe_events: {
+        Row: {
+          event_id: string;
+          processed_at: string;
+        };
+        Insert: {
+          event_id: string;
+          processed_at?: string;
+        };
+        Update: {
+          event_id?: string;
+          processed_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -130,6 +178,15 @@ export type Database = {
     };
     Enums: {
       user_role: "owner" | "admin" | "member";
+      subscription_status:
+        | "incomplete"
+        | "incomplete_expired"
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "canceled"
+        | "unpaid"
+        | "paused";
     };
     CompositeTypes: Record<string, never>;
   };

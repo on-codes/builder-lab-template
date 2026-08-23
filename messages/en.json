@@ -5,7 +5,8 @@
     "cancel": "Cancel",
     "save": "Save changes",
     "back": "Back",
-    "genericError": "Something went wrong. Please try again."
+    "genericError": "Something went wrong. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes and try again."
   },
   "Validation": {
     "emailInvalid": "Enter a valid email address.",
@@ -70,15 +71,17 @@
     "VerifyMfa": {
       "metadata": { "title": "Enter your code" },
       "title": "Check your email",
-      "description": "We emailed a 6-digit code to {email}. It expires in {minutes} minutes.",
+      "description": "We emailed a 6-digit code. It expires in {minutes} minutes.",
       "codeLabel": "6-digit code",
       "submit": "Verify",
       "submitting": "Verifying…",
       "resend": "Didn't get a code? Resend",
       "resendCooldown": "You can request a new code in {seconds}s",
-      "invalidCode": "That code is incorrect. {attemptsRemaining} attempts left.",
+      "resendSuccess": "We've sent a new code to your email.",
+      "invalidCode": "That code is incorrect. Try again.",
       "expiredCode": "That code has expired. Request a new one.",
-      "tooManyAttempts": "Too many incorrect attempts. Request a new code."
+      "tooManyAttempts": "Too many incorrect attempts. Request a new code.",
+      "sessionExpired": "Your login session has expired. Please log in again."
     }
   },
   "Emails": {
@@ -107,19 +110,38 @@
       "body": "Enter this code to finish logging in:",
       "expiry": "This code expires in {minutes} minutes.",
       "notYou": "If this wasn't you, someone may have your password — change it as soon as possible."
+    },
+    "subscriptionReceipt": {
+      "subject": "Your receipt",
+      "preview": "Payment received — thank you",
+      "heading": "Payment received",
+      "body": "Thanks — we've received your payment of {amount}.",
+      "viewInvoice": "View invoice",
+      "footer": "This is an automated receipt for your records."
+    },
+    "paymentFailed": {
+      "subject": "Payment failed",
+      "preview": "We couldn't process your last payment",
+      "heading": "Payment failed",
+      "body": "We weren't able to process your most recent payment. Update your payment method to keep your subscription active.",
+      "action": "Update payment method",
+      "footer": "If you believe this is a mistake, please check your card details in the billing portal."
     }
   },
   "Dashboard": {
     "metadata": { "title": "Dashboard" },
     "welcomeTitle": "Welcome back",
+    "welcomeDescription": "This is your dashboard home. As you add new features, their screens will show up here.",
     "nav": {
       "home": "Dashboard",
       "settings": "Settings",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "accountMenu": "Account menu"
     }
   },
   "Settings": {
     "nav": {
+      "navLabel": "Settings navigation",
       "profile": "Profile",
       "security": "Security",
       "billing": "Billing"
@@ -133,12 +155,48 @@
       "mfaDisabled": "Disabled",
       "mfaEnableAction": "Enable",
       "mfaDisableAction": "Disable",
+      "mfaToggleError": "Couldn't update two-factor authentication. Please try again.",
       "sessionsSectionTitle": "Active sessions",
       "sessionsSectionDescription": "Devices and browsers currently logged in to your account.",
+      "sessionsEmpty": "No active sessions.",
+      "sessionUnknownDevice": "Unknown device",
       "sessionCurrent": "This device",
       "sessionRevoke": "Log out",
       "sessionRevoked": "Session ended.",
-      "sessionCreatedAt": "Signed in {relativeTime}"
+      "sessionRevokeError": "Couldn't end that session. Please try again.",
+      "sessionCreatedAt": "Signed in {relativeTime}",
+      "sessionRevokeConfirmTitle": "Log out this session?",
+      "sessionRevokeConfirmDescription": "This session will lose access right away. You can always log back in from that device.",
+      "sessionRevokeConfirmDescriptionCurrent": "You're logged in on this device right now. You'll be signed out immediately and will need to log in again."
+    },
+    "Billing": {
+      "metadata": { "title": "Billing" },
+      "title": "Billing",
+      "plansSectionTitle": "Choose a plan",
+      "plansSectionDescription": "Subscribe to unlock the full dashboard.",
+      "currentPlanSectionTitle": "Your plan",
+      "currentPlanSectionDescription": "Manage your subscription, payment method, and invoices.",
+      "unknownPlan": "Subscription",
+      "status": {
+        "incomplete": "Incomplete",
+        "incomplete_expired": "Expired",
+        "trialing": "Trial",
+        "active": "Active",
+        "past_due": "Payment past due",
+        "canceled": "Canceled",
+        "unpaid": "Unpaid",
+        "paused": "Paused"
+      },
+      "renewsOn": "Renews {date}",
+      "endsOn": "Ends {date}",
+      "manageAction": "Manage subscription",
+      "manageActionLoading": "Opening billing portal…",
+      "subscribeAction": "Subscribe",
+      "subscribeActionLoading": "Starting checkout…",
+      "checkoutError": "Couldn't start checkout. Please try again.",
+      "portalError": "Couldn't open the billing portal. Please try again.",
+      "checkoutSuccessToast": "Subscription active — welcome aboard!",
+      "checkoutCanceledToast": "Checkout was canceled — you weren't charged."
     }
   }
 }
