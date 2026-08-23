@@ -8,7 +8,7 @@ description: Use this skill when adding any public-facing route/action, any feat
 ## Secrets
 
 - All secrets live in `.env.local` (git-ignored) locally, and in the Vercel project's
-  environment variables for deploys — never hardcoded, never committed. `stacks/web/.env.example`
+  environment variables for deploys — never hardcoded, never committed. `.env.example`
   lists the variable **names** only, with placeholder values, so the person knows what to
   fill in.
 - `.claude/hooks/check-secrets.sh` scans every diff before commit/push for patterns that look
@@ -68,9 +68,19 @@ and runaway costs:
 - Never trust an ID, price, or role passed from the client; re-derive from the authenticated
   session or look it up server-side.
 
+## Security headers
+
+- Security headers — `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`,
+  `Referrer-Policy`, `Strict-Transport-Security`, and `Permissions-Policy` — are set in
+  `next.config.ts` and/or `proxy.ts`.
+- CSRF: Next.js Server Actions have some built-in CSRF protection (same-origin checks on the
+  request). Don't assume that's sufficient blindly — verify it for this project and write the
+  verification up in `docs/decisions/` so there's a record of what was checked and confirmed.
+
 ## Checklist before marking a public-facing feature "done"
 
 - [ ] Rate limit applied (per IP or per user, as appropriate)
 - [ ] Email-sending paths respect the per-user cap
 - [ ] All inputs validated with Zod
 - [ ] No secret reachable from client code or committed to git
+- [ ] Security headers are set and verified

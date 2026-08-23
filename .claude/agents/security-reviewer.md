@@ -18,8 +18,17 @@ Go through the following, for the change being reviewed:
    (`.claude/skills/safe-migrations/SKILL.md`).
 4. **Rate limiting / email** — public routes and email sends respect the defined limits
    (`.claude/skills/app-security/SKILL.md`).
-5. **Payments (only if the project has Stripe code at all — usually it doesn't)** — test keys
-   by default, webhook validates the signature (`.claude/skills/stripe-billing/SKILL.md`).
+5. **Payments** — Stripe billing ships by default with every project built on this template, so
+   this check always applies (never skip it as "not in scope"). Test keys (`sk_test_...`) by
+   default; no `live` key in use unless the person has explicitly confirmed they're ready to
+   charge real customers. Webhook handler validates the signature and is idempotent — it checks
+   `event.id` against already-processed events before acting
+   (`.claude/skills/stripe-billing/SKILL.md`).
+6. **MFA** — for any change touching auth: the email OTP is rate-limited, time-boxed (5–10
+   minute expiry), single-use, and wrong attempts are capped with a lockout. Flag any of these
+   that are missing (`.claude/skills/supabase-security/SKILL.md`).
+7. **i18n** — any new user-facing string goes through the i18n message catalog, not hardcoded,
+   in the app or in an email template (CLAUDE.md section 10).
 
 If you find a problem, fix it yourself when it's straightforward (e.g. a missing policy) or go
 back to the main agent with a short, specific list of what's missing, so they can resolve it
