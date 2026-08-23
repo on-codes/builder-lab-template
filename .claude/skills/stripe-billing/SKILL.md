@@ -49,7 +49,11 @@ billing platform.
 
 - Every webhook endpoint verifies the signature:
   ```ts
-  const event = stripe.webhooks.constructEvent(rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+  const event = stripe.webhooks.constructEvent(
+    rawBody,
+    signature,
+    process.env.STRIPE_WEBHOOK_SECRET!,
+  );
   ```
 - Never process a webhook payload that failed signature verification.
 - Keep the webhook handler idempotent (Stripe retries on failure) — check `event.id` against a

@@ -32,10 +32,18 @@ create table if not exists public.rate_limits (
 
 ```ts
 // lib/rate-limit.ts
-export async function checkRateLimit(supabase: SupabaseClient, key: string, limit: number, windowSeconds: number) {
-  const { data } = await supabase.rpc('increment_rate_limit', { p_key: key, p_window_seconds: windowSeconds });
+export async function checkRateLimit(
+  supabase: SupabaseClient,
+  key: string,
+  limit: number,
+  windowSeconds: number,
+) {
+  const { data } = await supabase.rpc("increment_rate_limit", {
+    p_key: key,
+    p_window_seconds: windowSeconds,
+  });
   if (data && data.count > limit) {
-    throw new Error('RATE_LIMITED');
+    throw new Error("RATE_LIMITED");
   }
 }
 ```

@@ -16,15 +16,15 @@ the idea they want to validate, in one sentence.
 
 ## 1. Supported stack (don't deviate)
 
-| | Web dashboard |
-|---|---|
-| Framework | Next.js (App Router) + TypeScript |
-| UI | shadcn/ui + Tailwind |
-| Data fetching / cache | TanStack Query |
-| Deploy | Vercel |
-| Backend | Supabase (always) |
-| Payments | None by default — Stripe only if the app really charges (see section 8) |
-| Package manager | pnpm (always) |
+|                       | Web dashboard                                                           |
+| --------------------- | ----------------------------------------------------------------------- |
+| Framework             | Next.js (App Router) + TypeScript                                       |
+| UI                    | shadcn/ui + Tailwind                                                    |
+| Data fetching / cache | TanStack Query                                                          |
+| Deploy                | Vercel                                                                  |
+| Backend               | Supabase (always)                                                       |
+| Payments              | None by default — Stripe only if the app really charges (see section 8) |
+| Package manager       | pnpm (always)                                                           |
 
 Never suggest another framework or another backend — even if the person asks for something
 "simpler." If they ask, briefly explain why the template uses this stack (it's the one that's
@@ -60,15 +60,15 @@ three install exactly the same versions.
   commands outright.
 - Command translation, when you find `npm`-based instructions in docs online:
 
-  | Instead of | Run |
-  |---|---|
-  | `npm install` | `pnpm install` |
-  | `npm ci` | `pnpm install --frozen-lockfile` |
-  | `npm install <pkg>` | `pnpm add <pkg>` |
-  | `npm install -D <pkg>` | `pnpm add -D <pkg>` |
-  | `npm run <script>` / `npm test` | `pnpm <script>` / `pnpm test` |
-  | `npx <local tool>` | `pnpm exec <tool>` |
-  | `npx <one-off tool>` | `pnpm dlx <tool>` |
+  | Instead of                      | Run                              |
+  | ------------------------------- | -------------------------------- |
+  | `npm install`                   | `pnpm install`                   |
+  | `npm ci`                        | `pnpm install --frozen-lockfile` |
+  | `npm install <pkg>`             | `pnpm add <pkg>`                 |
+  | `npm install -D <pkg>`          | `pnpm add -D <pkg>`              |
+  | `npm run <script>` / `npm test` | `pnpm <script>` / `pnpm test`    |
+  | `npx <local tool>`              | `pnpm exec <tool>`               |
+  | `npx <one-off tool>`            | `pnpm dlx <tool>`                |
 
 - `pnpm-lock.yaml` is **always committed**. CI installs with `--frozen-lockfile`, so a
   missing or stale lock file turns the checks red.
@@ -82,6 +82,7 @@ three install exactly the same versions.
 ## 2. Golden rule: zero technical intervention from the person
 
 The person must NEVER need to:
+
 - run SQL manually,
 - read raw Vercel/Supabase logs and figure them out alone,
 - decide whether a key can go to GitHub,
@@ -110,6 +111,7 @@ it.
 
 Read `.claude/skills/supabase-security/SKILL.md` before creating any table or route that
 accesses user data. Summary of the non-negotiable rules:
+
 - Every new table has **RLS (Row Level Security) enabled** starting from the migration that
   creates it. Never create a table without a policy.
 - Authentication always via Supabase Auth. Sessions/cookies handled with the `@supabase/ssr`
@@ -122,6 +124,7 @@ accesses user data. Summary of the non-negotiable rules:
 
 Read `.claude/skills/safe-migrations/SKILL.md` before touching any schema. Non-negotiable
 rule: **a migration never changes or removes something that is already in production.**
+
 - Allowed: `CREATE TABLE`, `ALTER TABLE ... ADD COLUMN` (with `DEFAULT` or `NULL`),
   `CREATE INDEX`, new policies.
 - Forbidden without explicit approval and a written rollback plan: `DROP TABLE`,
@@ -150,6 +153,7 @@ rule: **a migration never changes or removes something that is already in produc
 ## 7. Vercel — Claude fixes the deploy on its own
 
 If a deploy fails (the person will just paste the link or say "it broke"), Claude:
+
 1. Uses the Vercel MCP to pull the logs from the failed deployment.
 2. Diagnoses the cause (build error, missing env var, type error, etc.) — see
    `.claude/skills/vercel-ops/SKILL.md` for the most common errors and the standard fix for
@@ -168,6 +172,7 @@ An MVP that only proves the idea works doesn't need to charge anybody.
 If (and only if) the project really does need to take money, it goes through **Stripe** —
 never another provider — and `.claude/skills/stripe-billing/SKILL.md` has the details. Short
 rules:
+
 - The Stripe MCP is **not** in `.mcp.json` by default. Add it only once payments are actually
   in scope, and then ask the person to connect it (the exact entry is in the skill).
 - Test keys (`sk_test_...`) during the workshop; never use a `live` key without the person
@@ -180,6 +185,7 @@ rules:
 ## 9. Application security layers
 
 See `.claude/skills/app-security/SKILL.md` for the reference implementations:
+
 - Rate limiting on every public route (Server Actions, Route Handlers, Edge Functions).
 - A per-user/per-period email sending limit (e.g. max 5 transactional emails per hour per
   user) to prevent abuse and unexpected costs.

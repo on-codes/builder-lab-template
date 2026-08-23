@@ -75,14 +75,14 @@ Reference files live in `stacks/web/`.
 
 ## Available commands
 
-| Command | What it does |
-|---|---|
-| `/setup` | Asks for your idea and builds the dashboard skeleton |
-| `/new-feature` | Standard flow for building a feature from start to finish |
-| `/new-migration` | Creates a new migration, always additive and with RLS |
-| `/fix-vercel-deploy` | Investigates and fixes a broken deploy |
-| `/pre-push-check` | Manually runs the full check before a push |
-| `/security-audit` | Quick security audit of the whole project |
+| Command              | What it does                                              |
+| -------------------- | --------------------------------------------------------- |
+| `/setup`             | Asks for your idea and builds the dashboard skeleton      |
+| `/new-feature`       | Standard flow for building a feature from start to finish |
+| `/new-migration`     | Creates a new migration, always additive and with RLS     |
+| `/fix-vercel-deploy` | Investigates and fixes a broken deploy                    |
+| `/pre-push-check`    | Manually runs the full check before a push                |
+| `/security-audit`    | Quick security audit of the whole project                 |
 
 ## Requirements for whoever facilitates the workshop
 

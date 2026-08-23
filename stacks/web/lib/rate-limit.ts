@@ -1,11 +1,11 @@
 // Simple rate limiting backed by an atomic Postgres function.
 // See supabase/migrations for the `rate_limits` table and the `increment_rate_limit` function.
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export class RateLimitError extends Error {
-  constructor(message = 'RATE_LIMITED') {
+  constructor(message = "RATE_LIMITED") {
     super(message);
-    this.name = 'RateLimitError';
+    this.name = "RateLimitError";
   }
 }
 
@@ -15,14 +15,14 @@ export async function checkRateLimit(
   limit: number,
   windowSeconds: number,
 ) {
-  const { data, error } = await supabase.rpc('increment_rate_limit', {
+  const { data, error } = await supabase.rpc("increment_rate_limit", {
     p_key: key,
     p_window_seconds: windowSeconds,
   });
 
   if (error) {
     // Fail open: never take the route down because of the rate limiter itself.
-    console.error('rate limit check failed', error);
+    console.error("rate limit check failed", error);
     return;
   }
 

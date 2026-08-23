@@ -14,11 +14,7 @@
       "Bash(git log*)",
       "Bash(supabase *)"
     ],
-    "ask": [
-      "Bash(git commit*)",
-      "Bash(git push*)",
-      "Bash(git merge*)"
-    ],
+    "ask": ["Bash(git commit*)", "Bash(git push*)", "Bash(git merge*)"],
     "deny": [
       "Bash(git push --force*)",
       "Bash(git commit --no-verify*)",

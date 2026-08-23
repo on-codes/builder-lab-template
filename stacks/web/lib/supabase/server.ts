@@ -1,7 +1,7 @@
 // Server client — use in Server Components / Server Actions / Route Handlers.
 // Reads and writes the session via httpOnly cookies managed by @supabase/ssr.
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -32,7 +32,7 @@ export async function createClient() {
 // service_role client — ONLY for Route Handlers/Server Actions that need to deliberately
 // bypass RLS (e.g. a Stripe webhook updating a user's status).
 // Never import this file from code that runs in the browser.
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export function createServiceRoleClient() {
   return createSupabaseClient(
