@@ -23,8 +23,10 @@ export async function checkRateLimit(
   });
 
   if (error) {
-    // Fail open: never take the route down because of the rate limiter itself.
-    console.error("rate limit check failed", error);
+    // Fail open: never take the route down because of the rate limiter itself. Log only the
+    // message, not the raw PostgrestError object (the `key` param can contain an IP or a
+    // user id, so don't assume the error's `details`/`hint` fields are safe to dump).
+    console.error("rate limit check failed", error.message);
     return;
   }
 

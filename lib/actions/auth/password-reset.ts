@@ -75,7 +75,13 @@ export async function requestPasswordReset(input: {
       { userId: data.user.id },
     );
   } catch (sendError) {
-    console.error("reset-password email send failed", sendError);
+    // sendEmail's contract is "never log to/subject/html" (lib/email/send.ts) — the reset
+    // email body embeds a live recovery link, so only the exception message is logged here,
+    // never the raw error object.
+    console.error(
+      "reset-password email send failed",
+      sendError instanceof Error ? sendError.message : String(sendError),
+    );
   }
 
   return ok(undefined);

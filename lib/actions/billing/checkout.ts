@@ -1,5 +1,9 @@
 "use server";
 
+// Aliased on import: the "stripe" package's default export (the SDK constructor, which
+// carries the `.errors.StripeError` namespace used below) and its named type-namespace
+// export are both called `Stripe` — same reason lib/stripe/client.ts aliases it.
+import StripeSDK from "stripe";
 import { z } from "zod";
 import { fail, ok, type ActionResult } from "@/lib/actions/result";
 import { requireUser, UnauthorizedError } from "@/lib/auth/session";
@@ -55,7 +59,18 @@ export async function createCheckoutSession(input: {
     return ok({ url: session.url });
   } catch (error) {
     if (error instanceof UnauthorizedError) return fail("UNAUTHORIZED");
-    console.error("createCheckoutSession failed", error);
+    // Never log a raw Stripe error: StripeError.message/.raw is Stripe's own API response
+    // text, which for parameter-validation failures (e.g. an invalid customer_email) can
+    // echo the offending value back verbatim. Log only the non-value-bearing identifiers —
+    // enough to look the request up in the Stripe dashboard.
+    console.error(
+      "createCheckoutSession failed",
+      error instanceof StripeSDK.errors.StripeError
+        ? { type: error.type, code: error.code, requestId: error.requestId }
+        : error instanceof Error
+          ? error.message
+          : String(error),
+    );
     return fail("UNKNOWN");
   }
 }

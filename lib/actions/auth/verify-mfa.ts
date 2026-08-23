@@ -106,7 +106,13 @@ export async function resendMfaCode(): Promise<ActionResult<undefined, ResendMfa
       { userId: pending.user_id },
     );
   } catch (sendError) {
-    console.error("MFA code resend email failed", sendError);
+    // sendEmail's contract is "never log to/subject/html" (lib/email/send.ts) — the MFA
+    // email body embeds the live one-time code, so only the exception message is logged
+    // here, never the raw error object.
+    console.error(
+      "MFA code resend email failed",
+      sendError instanceof Error ? sendError.message : String(sendError),
+    );
     return fail("UNKNOWN");
   }
 

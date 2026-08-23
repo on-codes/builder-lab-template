@@ -82,7 +82,11 @@ export async function signUp(input: {
     if (isKnownBenignSignupError(error.message)) {
       return ok({ email });
     }
-    console.error("signUp failed", error);
+    // Log only the message, never the raw AuthError object — this same generateLink()
+    // call takes `password` as a parameter, so the error is never assumed safe to dump
+    // wholesale (see lib/email/send.ts's "never log to/subject/html" comment for the same
+    // standard applied elsewhere in this codebase).
+    console.error("signUp failed", error.message);
     return fail("UNKNOWN");
   }
 
@@ -101,8 +105,13 @@ export async function signUp(input: {
     // The account exists either way — a failed send shouldn't be reported as a failed
     // signup (that would tell an attacker enumeration info via which failure they hit).
     // Logged so Claude can investigate; the person can request a fresh link if needed once
-    // that flow exists.
-    console.error("verification email send failed", sendError);
+    // that flow exists. sendEmail's contract is "never log to/subject/html" (lib/email/
+    // send.ts) — the verify link embeds a live auth token, so only the exception message is
+    // logged here, never the raw error object.
+    console.error(
+      "verification email send failed",
+      sendError instanceof Error ? sendError.message : String(sendError),
+    );
   }
 
   return ok({ email });

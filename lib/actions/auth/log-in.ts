@@ -88,7 +88,13 @@ export async function logIn(input: {
       { userId: data.user.id },
     );
   } catch (sendError) {
-    console.error("MFA code email send failed", sendError);
+    // sendEmail's contract is "never log to/subject/html" (lib/email/send.ts) — the MFA
+    // email body embeds the live one-time code, so only the exception message is logged
+    // here, never the raw error object.
+    console.error(
+      "MFA code email send failed",
+      sendError instanceof Error ? sendError.message : String(sendError),
+    );
     // The code still exists and can be resent — don't fail the login attempt itself over an
     // email delivery hiccup; the verify-mfa screen offers a resend.
   }

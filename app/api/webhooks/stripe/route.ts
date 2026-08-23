@@ -26,7 +26,16 @@ export async function POST(request: Request) {
   try {
     event = stripe.webhooks.constructEvent(rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (error) {
-    console.error("Stripe webhook signature verification failed", error);
+    // Never log the raw error here: Stripe.errors.StripeSignatureVerificationError carries
+    // the full raw request body as its own `.payload` property (by design, so callers can
+    // inspect it) — logging the error object wholesale would print that payload, which for a
+    // real Stripe event can embed customer email/billing details, into server logs on every
+    // failed/forged signature attempt. Stripe's own `.message` for this failure is always a
+    // fixed, generic string, never the payload — safe (and sufficient) to log on its own.
+    console.error(
+      "Stripe webhook signature verification failed",
+      error instanceof Error ? error.message : String(error),
+    );
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -45,7 +54,8 @@ export async function POST(request: Request) {
       // unique_violation — already processed.
       return NextResponse.json({ received: true, duplicate: true });
     }
-    console.error("Failed to record processed Stripe event", insertError);
+    // Log only the message, not the raw PostgrestError object.
+    console.error("Failed to record processed Stripe event", insertError.message);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 
@@ -72,7 +82,21 @@ export async function POST(request: Request) {
         break;
     }
   } catch (error) {
-    console.error(`Stripe webhook handler failed for ${event.type}`, error);
+    // Never log a raw error here: this catch can see a Stripe error (e.g. from
+    // subscriptions.retrieve — StripeError.message/.raw is Stripe's own API response text,
+    // which can echo request values back) or a sendEmail() failure (whose contract is "never
+    // log to/subject/html", see lib/email/send.ts, since the emails sent from this handler
+    // carry billing amounts and a customer-facing invoice URL). Log only non-value-bearing
+    // identifiers/messages, matching the same standard applied throughout the auth and
+    // billing action files.
+    console.error(
+      `Stripe webhook handler failed for ${event.type}`,
+      error instanceof Stripe.errors.StripeError
+        ? { type: error.type, code: error.code, requestId: error.requestId }
+        : error instanceof Error
+          ? error.message
+          : String(error),
+    );
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 
@@ -208,7 +232,8 @@ async function upsertSubscription(
   );
 
   if (error) {
-    console.error("Failed to upsert subscription", error);
+    // Log only the message, not the raw PostgrestError object.
+    console.error("Failed to upsert subscription", error.message);
   }
 }
 

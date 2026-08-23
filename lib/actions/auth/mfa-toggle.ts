@@ -24,7 +24,8 @@ async function setMfaEnabled(enabled: boolean): Promise<ActionResult<undefined, 
       .eq("id", user.id);
 
     if (error) {
-      console.error("failed to update mfa_enabled", error);
+      // Log only the message, not the raw PostgrestError object.
+      console.error("failed to update mfa_enabled", error.message);
       return fail("UNKNOWN");
     }
 
