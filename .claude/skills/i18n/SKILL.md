@@ -101,8 +101,13 @@ export function SaveButton() {
 ```
 
 Outside the request lifecycle entirely — a Stripe webhook, an email send — there's no ambient
-locale to read, so pass it in explicitly: `getTranslations({ locale, namespace: "Emails.mfaCode" })`.
-See `.claude/skills/email-templates/SKILL.md`.
+locale to read AND no guarantee the code runs inside Next.js's own bundler at all (Vitest, the
+`react-email` CLI preview server). `getTranslations`/`useTranslations` depend on Next.js's
+"react-server" build condition and throw ("not supported in Client Components") anywhere that
+condition isn't set — which includes both of those. Email templates use
+`getEmailTranslator(locale, namespace)` (`lib/i18n/email-translator.ts`) instead, a thin
+wrapper around `use-intl`'s framework-agnostic `createTranslator` that works identically in
+all three contexts. See `.claude/skills/email-templates/SKILL.md`.
 
 ## The non-negotiable rule
 

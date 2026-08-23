@@ -10,7 +10,10 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
+    // Node, not jsdom, by default: most of this repo's tests are Server Actions and plain
+    // lib/ logic, not component rendering. Component tests that actually need a DOM opt in
+    // per-file with a `// @vitest-environment jsdom` pragma comment at the top of the file.
+    environment: "node",
     setupFiles: ["./vitest.setup.ts"],
     globals: true,
     exclude: ["node_modules", ".next", "e2e", "stacks"],

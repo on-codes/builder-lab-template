@@ -96,6 +96,18 @@ attacker-supplied identity would itself be a timing/enumeration side-channel.
   session-refresh check `proxy.ts` already does every request.
 - [Risk] HIBP dependency is an external network call on the signup/reset-password path. →
   Mitigation: fail-open with a short timeout, never block on it.
+- [Risk] Supabase's own session cookie is established immediately on password verification
+  (via the standard `@supabase/ssr` flow), even when MFA is still pending — so for the
+  ~10-minute pending window, a client that queries Supabase directly (bypassing this app's
+  own Server Actions) could read whatever RLS allows for that user directly, without having
+  completed MFA. → Mitigation: accepted for v1, scope is narrow — this only matters for
+  someone who already has the correct password (MFA's whole purpose is defense past that
+  point) and only exposes what RLS already allows a browser client to read directly, which by
+  this template's own convention should be low-sensitivity (this app's Server Actions, which
+  DO enforce the full `bl_session` gate, are the intended path for anything sensitive). A more
+  complete fix — verify the password with a throwaway, non-cookie-persisting client, and only
+  call `setSession()` on the real SSR client once MFA (or its absence) is fully resolved — is
+  a reasonable follow-up change, not a blocker for this one.
 - [Risk] Single-owner-account RBAC is a real extension point but not exercised by anything in
   this change (`admin`/`member` have no distinct behavior yet). → Mitigation: accepted — the
   cost of the column now is near zero; the cost of adding it after real accounts exist is a

@@ -30,20 +30,24 @@ branding change is one file, not five. The five required templates:
 ## Copy comes from i18n, always
 
 No string is ever typed directly into a template — see `.claude/skills/i18n/SKILL.md`. Emails
-render outside a page request, so there's no ambient locale to read; pass it in explicitly. A
+render outside a page request AND outside Next.js's own bundler in two of the three contexts
+that render them (tests, the `email:dev` CLI preview) — `getTranslations`/`useTranslations`
+depend on Next.js's "react-server" build condition and throw in both, so templates use
+`getEmailTranslator` (`lib/i18n/email-translator.ts`) instead, never `next-intl/server`. A
 template file default-exports the component (so the local preview server can find it) and
 names its subject line the same way:
 
 ```tsx
 // emails/mfa-code.tsx
 import { Text } from "@react-email/components";
-import { getTranslations } from "next-intl/server";
+import { getEmailTranslator } from "@/lib/i18n/email-translator";
+import type { Locale } from "@/i18n/routing";
 import { EmailLayout } from "./components/email-layout";
 
-type Props = { code: string; expiresInMinutes: number; locale: string };
+type Props = { code: string; expiresInMinutes: number; locale: Locale };
 
 export default async function MfaCodeEmail({ code, expiresInMinutes, locale }: Props) {
-  const t = await getTranslations({ locale, namespace: "Emails.mfaCode" });
+  const t = await getEmailTranslator(locale, "Emails.mfaCode");
 
   return (
     <EmailLayout preview={t("preview")}>
@@ -55,7 +59,7 @@ export default async function MfaCodeEmail({ code, expiresInMinutes, locale }: P
 }
 
 export async function subject({ locale }: Pick<Props, "locale">) {
-  const t = await getTranslations({ locale, namespace: "Emails.mfaCode" });
+  const t = await getEmailTranslator(locale, "Emails.mfaCode");
   return t("subject");
 }
 ```
@@ -67,57 +71,36 @@ Nothing calls the Resend SDK directly. Every send goes through one helper
 could be swapped later without touching a single call site:
 
 ```ts
-// lib/email/send.ts
-import type { ReactElement } from "react";
-import { Resend } from "resend";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { createServiceClient } from "@/lib/supabase/service";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-type EmailTemplate<P> = {
-  default: (props: P) => Promise<ReactElement>;
-  subject: (props: P) => Promise<string>;
-};
-
-export async function sendEmail<P extends { userId: string }>(
-  template: EmailTemplate<P>,
+// lib/email/send.ts (actual signature — see the file itself for the full implementation)
+export async function sendEmail<P>(
+  template: EmailTemplate<P>, // { default: (props) => Promise<ReactElement>, subject: (props) => Promise<string> }
   props: P,
   to: string,
-) {
-  const supabase = createServiceClient();
-  await checkRateLimit(supabase, `email:${props.userId}`, 5, 60 * 60); // app-security skill
-
-  const { error } = await resend.emails.send({
-    from: "Your App <notifications@yourapp.com>",
-    to,
-    subject: await template.subject(props),
-    react: await template.default(props),
-  });
-
-  if (error) {
-    // never log `to` or the rendered body — an opaque failure is enough to act on
-    throw new Error("EMAIL_SEND_FAILED");
-  }
-}
+  options: { userId: string }, // kept separate from `props` — the template itself never needs a user id, only the rate limit does
+): Promise<void>;
 ```
+
+It renders with `@react-email/render`'s `render()` (not `resend.emails.send({ react })`
+directly — see `docs/decisions/0002-react-email-components-package.md` for why template
+source imports from `@react-email/components`, not the unified `react-email` package), checks
+the per-user send limit via `checkEmailSendLimit` (`.claude/skills/app-security/SKILL.md`)
+before it ever calls Resend, and never logs the recipient, subject, or rendered body.
 
 Call sites import the whole module and hand it straight to the helper — never
 `resend.emails.send(...)` directly from a Server Action, Route Handler, or webhook:
 
 ```ts
 import * as mfaCodeEmail from "@/emails/mfa-code";
-await sendEmail(mfaCodeEmail, { code, expiresInMinutes: 10, locale, userId }, user.email);
+await sendEmail(mfaCodeEmail, { code, expiresInMinutes: 10, locale }, user.email, { userId });
 ```
 
 ## Local preview
 
 `pnpm email:dev` runs React Email's local preview server against everything in `emails/`, so
 the person can see exactly what a template looks like in a browser tab — nothing to read, just
-look at it. **TODO — not wired up yet:** `package.json` doesn't have the `react-email` package
-or an `"email:dev": "email dev"` script in this template as of now. Add both
-(`pnpm add -D react-email`, plus the script) the first time this skill is used for real —
-don't assume they already exist.
+look at it. `react-email` (the CLI, devDependency-only) is already installed and the script
+already wired up — see `docs/decisions/0002-react-email-components-package.md` for why the
+CLI package stays out of `emails/**/*.tsx` itself (it's for `email:dev` only).
 
 ## Testing
 

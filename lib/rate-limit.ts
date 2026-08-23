@@ -1,5 +1,7 @@
-// Simple rate limiting backed by an atomic Postgres function.
-// See supabase/migrations for the `rate_limits` table and the `increment_rate_limit` function.
+// Simple rate limiting backed by an atomic Postgres function. See
+// supabase/migrations/00000000000001_rate_limits.sql for the table and the
+// increment_rate_limit function, and .claude/skills/app-security/SKILL.md for the
+// IP-vs-user_id keying convention.
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export class RateLimitError extends Error {
@@ -26,7 +28,8 @@ export async function checkRateLimit(
     return;
   }
 
-  if (data && data.count > limit) {
+  const row = Array.isArray(data) ? data[0] : data;
+  if (row && row.count > limit) {
     throw new RateLimitError();
   }
 }

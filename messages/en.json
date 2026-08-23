@@ -1,0 +1,144 @@
+{
+  "Common": {
+    "appName": "BuilderLab",
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "save": "Save changes",
+    "back": "Back",
+    "genericError": "Something went wrong. Please try again."
+  },
+  "Validation": {
+    "emailInvalid": "Enter a valid email address.",
+    "passwordTooShort": "Password must be at least 12 characters.",
+    "passwordTooWeak": "This password is too easy to guess. Try adding another word or a few extra characters.",
+    "passwordBreached": "This password has appeared in a known data breach. Please choose a different one.",
+    "passwordsDontMatch": "Passwords don't match.",
+    "otpInvalid": "Enter the 6-digit code from your email.",
+    "required": "This field is required."
+  },
+  "Auth": {
+    "Login": {
+      "metadata": { "title": "Log in" },
+      "title": "Welcome back",
+      "description": "Log in to your account",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "invalidCredentials": "That email and password don't match an account.",
+      "verifyEmailFirst": "Check your inbox and verify your email before logging in."
+    },
+    "Signup": {
+      "metadata": { "title": "Sign up" },
+      "title": "Create your account",
+      "description": "Start building on top of the foundation — auth, billing, and a dashboard are already here.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "haveAccount": "Already have an account?",
+      "logInLink": "Log in",
+      "checkEmail": "Check your email to verify your account before logging in.",
+      "termsNotice": "By continuing, you agree to our Terms and Privacy Policy."
+    },
+    "ForgotPassword": {
+      "metadata": { "title": "Reset your password" },
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a link to reset your password.",
+      "emailLabel": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "checkEmail": "If an account exists for that email, a reset link is on its way.",
+      "backToLogin": "Back to login"
+    },
+    "ResetPassword": {
+      "metadata": { "title": "Set a new password" },
+      "title": "Set a new password",
+      "description": "Choose a new password for your account.",
+      "passwordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "submit": "Update password",
+      "submitting": "Updating…",
+      "success": "Your password has been updated. You can log in now.",
+      "invalidLink": "This reset link is invalid or has expired. Request a new one.",
+      "requestNewLink": "Request a new link"
+    },
+    "VerifyMfa": {
+      "metadata": { "title": "Enter your code" },
+      "title": "Check your email",
+      "description": "We emailed a 6-digit code to {email}. It expires in {minutes} minutes.",
+      "codeLabel": "6-digit code",
+      "submit": "Verify",
+      "submitting": "Verifying…",
+      "resend": "Didn't get a code? Resend",
+      "resendCooldown": "You can request a new code in {seconds}s",
+      "invalidCode": "That code is incorrect. {attemptsRemaining} attempts left.",
+      "expiredCode": "That code has expired. Request a new one.",
+      "tooManyAttempts": "Too many incorrect attempts. Request a new code."
+    }
+  },
+  "Emails": {
+    "verifyEmail": {
+      "subject": "Verify your email",
+      "preview": "Confirm your email to finish creating your account",
+      "heading": "Verify your email",
+      "body": "Click the button below to verify your email and finish creating your account.",
+      "action": "Verify email",
+      "expiry": "This link expires in {hours} hours.",
+      "notYou": "If you didn't create an account, you can safely ignore this email."
+    },
+    "resetPassword": {
+      "subject": "Reset your password",
+      "preview": "Reset your password",
+      "heading": "Reset your password",
+      "body": "Click the button below to choose a new password.",
+      "action": "Reset password",
+      "expiry": "This link expires in {minutes} minutes.",
+      "notYou": "If you didn't request this, you can safely ignore this email — your password won't change."
+    },
+    "mfaCode": {
+      "subject": "Your verification code",
+      "preview": "Your BuilderLab verification code",
+      "heading": "Your verification code",
+      "body": "Enter this code to finish logging in:",
+      "expiry": "This code expires in {minutes} minutes.",
+      "notYou": "If this wasn't you, someone may have your password — change it as soon as possible."
+    }
+  },
+  "Dashboard": {
+    "metadata": { "title": "Dashboard" },
+    "welcomeTitle": "Welcome back",
+    "nav": {
+      "home": "Dashboard",
+      "settings": "Settings",
+      "signOut": "Sign out"
+    }
+  },
+  "Settings": {
+    "nav": {
+      "profile": "Profile",
+      "security": "Security",
+      "billing": "Billing"
+    },
+    "Security": {
+      "metadata": { "title": "Security" },
+      "title": "Security",
+      "mfaSectionTitle": "Two-factor authentication",
+      "mfaSectionDescription": "Require a 6-digit code emailed to you at every login, in addition to your password.",
+      "mfaEnabled": "Enabled",
+      "mfaDisabled": "Disabled",
+      "mfaEnableAction": "Enable",
+      "mfaDisableAction": "Disable",
+      "sessionsSectionTitle": "Active sessions",
+      "sessionsSectionDescription": "Devices and browsers currently logged in to your account.",
+      "sessionCurrent": "This device",
+      "sessionRevoke": "Log out",
+      "sessionRevoked": "Session ended.",
+      "sessionCreatedAt": "Signed in {relativeTime}"
+    }
+  }
+}
