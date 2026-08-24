@@ -10,6 +10,26 @@
     "skipToContent": "Skip to main content",
     "close": "Close"
   },
+  "Errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "description": "We hit a snag loading this page. Try again, or head back home.",
+      "retryAction": "Try again",
+      "homeAction": "Go home"
+    },
+    "dashboard": {
+      "goToDashboardAction": "Go to dashboard"
+    }
+  },
+  "NotFound": {
+    "metadata": { "title": "Page not found" },
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or may have moved.",
+    "homeAction": "Go home",
+    "dashboard": {
+      "goToDashboardAction": "Go to dashboard"
+    }
+  },
   "Validation": {
     "emailInvalid": "Enter a valid email address.",
     "passwordTooShort": "Password must be at least 12 characters.",
