@@ -158,14 +158,13 @@
       "navLabel": "Primary navigation",
       "home": "Dashboard",
       "settings": "Settings",
-      "openMenu": "Open menu",
+      "toggleSidebar": "Toggle sidebar",
       "signOut": "Sign out",
       "accountMenu": "Account menu"
     }
   },
   "Settings": {
     "nav": {
-      "navLabel": "Settings navigation",
       "profile": "Profile",
       "security": "Security",
       "billing": "Billing"

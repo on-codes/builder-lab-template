@@ -1,10 +1,16 @@
 import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 import type * as React from "react";
-import { Link, redirect } from "@/i18n/navigation";
+import { Separator } from "@/components/ui/separator";
+import {
+  SIDEBAR_COOKIE_NAME,
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { redirect } from "@/i18n/navigation";
 import { requireUser, UnauthorizedError, type AuthedUser } from "@/lib/auth/session";
-import { DashboardNav } from "./dashboard-nav";
-import { MobileNav } from "./mobile-nav";
-import { UserMenu } from "./user-menu";
+import { AppSidebar } from "./app-sidebar";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -29,9 +35,17 @@ export default async function DashboardLayout({ children, params }: DashboardLay
   }
 
   const common = await getTranslations("Common");
+  const navT = await getTranslations("Dashboard.nav");
+
+  // A plain UI-preference cookie (never "false" until the person actually collapses the
+  // sidebar once), read here so the very first render already matches their last choice
+  // instead of flashing expanded-then-collapsed after the page loads — see
+  // components/ui/sidebar.tsx for where this same cookie gets written back on toggle.
+  const cookieStore = await cookies();
+  const sidebarOpen = cookieStore.get(SIDEBAR_COOKIE_NAME)?.value !== "false";
 
   return (
-    <div className="flex min-h-svh flex-col">
+    <SidebarProvider defaultOpen={sidebarOpen}>
       {/* Keyboard/screen-reader users can jump straight past the nav — invisible until it
           receives focus (Tab from the top of the page), then pinned in view. */}
       <a
@@ -40,29 +54,18 @@ export default async function DashboardLayout({ children, params }: DashboardLay
       >
         {common("skipToContent")}
       </a>
-      <header className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 md:px-6">
-          <MobileNav />
-          {/* min-w-0 lets this shrink below its natural width when the row is tight (mobile
-              menu button + nav links + account menu all need their own space) — without it, a
-              long product name (e.g. from /setup) wraps to a second line instead of eliding,
-              which can exceed the header's fixed h-14 height. */}
-          <Link href="/dashboard" className="min-w-0 truncate text-lg font-semibold tracking-tight">
-            {common("appName")}
-          </Link>
-          <DashboardNav className="ml-6 hidden md:flex" />
-          <div className="ml-auto flex items-center gap-2">
-            <UserMenu email={user.email} />
-          </div>
-        </div>
-      </header>
+      <AppSidebar email={user.email} appName={common("appName")} />
       {/* The one container every dashboard page's content renders into — consistent
           max-width/padding regardless of what the page itself does. Individual sections
           (e.g. Settings) are still free to narrow further inside this, see
           dashboard/settings/layout.tsx. */}
-      <main id="main-content" className="flex-1">
-        <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6">{children}</div>
-      </main>
-    </div>
+      <SidebarInset id="main-content">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 md:px-6">
+          <SidebarTrigger aria-label={navT("toggleSidebar")} />
+          <Separator orientation="vertical" className="h-4" />
+        </header>
+        <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-6">{children}</div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
