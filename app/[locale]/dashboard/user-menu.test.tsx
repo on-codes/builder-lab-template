@@ -54,10 +54,13 @@ vi.mock("@/lib/actions/auth/sign-out", () => ({
   signOut: () => signOutMock(),
 }));
 
-function renderUserMenu(email: string) {
+function renderUserMenu(
+  email: string,
+  extraProps?: { displayName?: string | null; avatarUrl?: string | null },
+) {
   return render(
     <SidebarProvider>
-      <UserMenu email={email} />
+      <UserMenu email={email} {...extraProps} />
     </SidebarProvider>,
   );
 }
@@ -93,7 +96,7 @@ describe("UserMenu", () => {
   });
 
   it("shows initials from the display name when one is set, not the email", () => {
-    render(<UserMenu email="jane@example.com" displayName="Ada Lovelace" />);
+    renderUserMenu("jane@example.com", { displayName: "Ada Lovelace" });
 
     expect(screen.getByText("AL")).toBeInTheDocument();
   });
