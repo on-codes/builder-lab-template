@@ -1,9 +1,9 @@
 "use client";
 
+import { ChevronsUpDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { signOut } from "@/lib/actions/auth/sign-out";
 
 type UserMenuProps = {
@@ -24,7 +25,10 @@ function getInitials(email: string): string {
 }
 
 /**
- * Topbar account menu — avatar trigger, email, a link to Settings, and sign-out. Client-side
+ * The sidebar's bottom account row — avatar, email, and a dropdown with sign-out. Rendered as
+ * a SidebarMenuButton so it shrinks to just the avatar when the sidebar is collapsed to icons
+ * (see sidebarMenuButtonVariants' icon-mode override in components/ui/sidebar.tsx), which is
+ * also why this now needs a SidebarProvider ancestor — see user-menu.test.tsx. Client-side
  * because it needs interactivity (the dropdown open state and useTransition around the
  * sign-out Server Action); everything else in the dashboard shell stays server-rendered.
  */
@@ -42,23 +46,44 @@ export function UserMenu({ email }: UserMenuProps) {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full" aria-label={t("accountMenu")}>
-          <Avatar>
-            <AvatarFallback>{getInitials(email)}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="text-muted-foreground truncate text-xs font-normal">
-          {email}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled={isPending} onSelect={handleSignOut}>
-          {t("signOut")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              aria-label={t("accountMenu")}
+              // The base icon-collapsed override (components/ui/sidebar.tsx) sizes this button
+              // to fit the 16px nav icons with 8px padding; the 32px avatar here needs the
+              // padding gone instead, or it gets clipped against the button's own bounds.
+              className="group-data-[collapsible=icon]:p-0!"
+            >
+              {/* ring-sidebar-border: the fallback's bg-muted circle reads fine on the plain
+                  dashboard background it was designed for, but barely contrasts against the
+                  sidebar's own near-white surface — a hairline ring keeps its edge legible in
+                  both themes without a one-off color. */}
+              <Avatar className="ring-1 ring-sidebar-border">
+                <AvatarFallback>{getInitials(email)}</AvatarFallback>
+              </Avatar>
+              <span className="min-w-0 flex-1 truncate">{email}</span>
+              <ChevronsUpDownIcon className="ml-auto" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="top"
+            align="start"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
+          >
+            <DropdownMenuLabel className="text-muted-foreground truncate text-xs font-normal">
+              {email}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem disabled={isPending} onSelect={handleSignOut}>
+              {t("signOut")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }
