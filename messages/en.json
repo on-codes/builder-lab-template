@@ -6,7 +6,9 @@
     "save": "Save changes",
     "back": "Back",
     "genericError": "Something went wrong. Please try again.",
-    "rateLimited": "Too many attempts. Please wait a few minutes and try again."
+    "rateLimited": "Too many attempts. Please wait a few minutes and try again.",
+    "skipToContent": "Skip to main content",
+    "close": "Close"
   },
   "Validation": {
     "emailInvalid": "Enter a valid email address.",
@@ -133,8 +135,10 @@
     "welcomeTitle": "Welcome back",
     "welcomeDescription": "This is your dashboard home. As you add new features, their screens will show up here.",
     "nav": {
+      "navLabel": "Primary navigation",
       "home": "Dashboard",
       "settings": "Settings",
+      "openMenu": "Open menu",
       "signOut": "Sign out",
       "accountMenu": "Account menu"
     }

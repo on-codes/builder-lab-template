@@ -1,8 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import type * as React from "react";
-import { Separator } from "@/components/ui/separator";
 import { Link, redirect } from "@/i18n/navigation";
 import { requireUser, UnauthorizedError, type AuthedUser } from "@/lib/auth/session";
+import { DashboardNav } from "./dashboard-nav";
+import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
 
 type DashboardLayoutProps = {
@@ -31,16 +32,31 @@ export default async function DashboardLayout({ children, params }: DashboardLay
 
   return (
     <div className="flex min-h-svh flex-col">
-      <header>
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:px-6">
+      {/* Keyboard/screen-reader users can jump straight past the nav — invisible until it
+          receives focus (Tab from the top of the page), then pinned in view. */}
+      <a
+        href="#main-content"
+        className="bg-background text-foreground focus-visible:ring-ring sr-only rounded-md border px-4 py-2 text-sm font-medium focus:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:ring-2 focus-visible:outline-hidden"
+      >
+        {common("skipToContent")}
+      </a>
+      <header className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 md:px-6">
+          <MobileNav />
           <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
             {common("appName")}
           </Link>
-          <UserMenu email={user.email} />
+          <DashboardNav className="ml-6 hidden md:flex" />
+          <div className="ml-auto flex items-center gap-2">
+            <UserMenu email={user.email} />
+          </div>
         </div>
       </header>
-      <Separator />
-      <main className="flex-1">
+      {/* The one container every dashboard page's content renders into — consistent
+          max-width/padding regardless of what the page itself does. Individual sections
+          (e.g. Settings) are still free to narrow further inside this, see
+          dashboard/settings/layout.tsx. */}
+      <main id="main-content" className="flex-1">
         <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6">{children}</div>
       </main>
     </div>

@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "@/i18n/navigation";
 import { signOut } from "@/lib/actions/auth/sign-out";
 
 type UserMenuProps = {
@@ -55,10 +54,6 @@ export function UserMenu({ email }: UserMenuProps) {
         <DropdownMenuLabel className="text-muted-foreground truncate text-xs font-normal">
           {email}
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings/security">{t("settings")}</Link>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled={isPending} onSelect={handleSignOut}>
           {t("signOut")}
