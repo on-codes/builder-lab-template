@@ -97,6 +97,21 @@ describe("AppSidebar", () => {
     expect(screen.getByRole("link", { name: "security" })).not.toHaveAttribute("aria-current");
   });
 
+  it("shows Profile first, then Security, then Billing in the expanded Settings group", () => {
+    mockUsePathname.mockReturnValue("/dashboard/settings/profile");
+    renderSidebar();
+
+    const settingsLinks = ["profile", "security", "billing"].map((name) =>
+      screen.getByRole("link", { name }),
+    );
+    expect(settingsLinks.map((link) => link.getAttribute("href"))).toEqual([
+      "/dashboard/settings/profile",
+      "/dashboard/settings/security",
+      "/dashboard/settings/billing",
+    ]);
+    expect(settingsLinks[0]).toHaveAttribute("aria-current", "page");
+  });
+
   it("toggles the Settings group open and closed on click", async () => {
     const user = userEvent.setup();
     mockUsePathname.mockReturnValue("/dashboard");

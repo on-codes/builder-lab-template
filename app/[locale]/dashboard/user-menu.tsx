@@ -3,7 +3,7 @@
 import { ChevronsUpDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,15 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { signOut } from "@/lib/actions/auth/sign-out";
+import { getInitials } from "@/lib/utils";
 
 type UserMenuProps = {
   email: string;
+  displayName?: string | null;
+  avatarUrl?: string | null;
 };
-
-function getInitials(email: string): string {
-  const [localPart] = email.split("@");
-  return localPart.slice(0, 2).toUpperCase();
-}
 
 /**
  * The sidebar's bottom account row — avatar, email, and a dropdown with sign-out. Rendered as
@@ -32,7 +30,7 @@ function getInitials(email: string): string {
  * because it needs interactivity (the dropdown open state and useTransition around the
  * sign-out Server Action); everything else in the dashboard shell stays server-rendered.
  */
-export function UserMenu({ email }: UserMenuProps) {
+export function UserMenu({ email, displayName, avatarUrl }: UserMenuProps) {
   const t = useTranslations("Dashboard.nav");
   const [isPending, startTransition] = useTransition();
 
@@ -63,7 +61,8 @@ export function UserMenu({ email }: UserMenuProps) {
                   sidebar's own near-white surface — a hairline ring keeps its edge legible in
                   both themes without a one-off color. */}
               <Avatar className="ring-1 ring-sidebar-border">
-                <AvatarFallback>{getInitials(email)}</AvatarFallback>
+                {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
+                <AvatarFallback>{getInitials(displayName, email)}</AvatarFallback>
               </Avatar>
               <span className="min-w-0 flex-1 truncate">{email}</span>
               <ChevronsUpDownIcon className="ml-auto" />

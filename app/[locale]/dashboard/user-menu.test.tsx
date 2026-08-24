@@ -54,10 +54,13 @@ vi.mock("@/lib/actions/auth/sign-out", () => ({
   signOut: () => signOutMock(),
 }));
 
-function renderUserMenu(email: string) {
+function renderUserMenu(
+  email: string,
+  extraProps?: { displayName?: string | null; avatarUrl?: string | null },
+) {
   return render(
     <SidebarProvider>
-      <UserMenu email={email} />
+      <UserMenu email={email} {...extraProps} />
     </SidebarProvider>,
   );
 }
@@ -90,5 +93,11 @@ describe("UserMenu", () => {
     await user.click(screen.getByRole("menuitem", { name: "signOut" }));
 
     expect(signOutMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows initials from the display name when one is set, not the email", () => {
+    renderUserMenu("jane@example.com", { displayName: "Ada Lovelace" });
+
+    expect(screen.getByText("AL")).toBeInTheDocument();
   });
 });

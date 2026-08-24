@@ -37,7 +37,8 @@
     "passwordBreached": "This password has appeared in a known data breach. Please choose a different one.",
     "passwordsDontMatch": "Passwords don't match.",
     "otpInvalid": "Enter the 6-digit code from your email.",
-    "required": "This field is required."
+    "required": "This field is required.",
+    "nameTooLong": "Name must be 80 characters or fewer."
   },
   "Auth": {
     "Login": {
@@ -125,6 +126,15 @@
       "expiry": "This link expires in {minutes} minutes.",
       "notYou": "If you didn't request this, you can safely ignore this email — your password won't change."
     },
+    "confirmEmailChange": {
+      "subject": "Confirm your new email address",
+      "preview": "Confirm the email change on your account",
+      "heading": "Confirm your email change",
+      "body": "Someone requested to change the email on your account to {newEmail}. Click below to confirm.",
+      "action": "Confirm email change",
+      "expiry": "This link expires in {hours} hours.",
+      "notYou": "If you didn't request this, you can safely ignore this email — your email won't change."
+    },
     "mfaCode": {
       "subject": "Your verification code",
       "preview": "Your BuilderLab verification code",
@@ -168,6 +178,43 @@
       "profile": "Profile",
       "security": "Security",
       "billing": "Billing"
+    },
+    "Profile": {
+      "metadata": { "title": "Profile" },
+      "title": "Profile",
+      "profileSectionTitle": "Profile",
+      "profileSectionDescription": "Update your display name and profile picture.",
+      "avatarUploadAction": "Upload photo",
+      "avatarEditAction": "Edit",
+      "avatarRemoveAction": "Remove",
+      "avatarUploading": "Uploading…",
+      "avatarRemoving": "Removing…",
+      "avatarHelp": "PNG, JPG, WebP, or GIF. Up to 5 MB.",
+      "avatarUpdated": "Profile picture updated.",
+      "avatarRemoved": "Profile picture removed.",
+      "avatarUploadErrorTooLarge": "That image is larger than 5 MB. Choose a smaller file.",
+      "avatarUploadErrorInvalidType": "That file isn't a supported image type. Use PNG, JPG, WebP, or GIF.",
+      "avatarUploadError": "Couldn't upload that picture. Please try again.",
+      "avatarRemoveError": "Couldn't remove your picture. Please try again.",
+      "nameLabel": "Name",
+      "nameSaving": "Saving…",
+      "nameUpdated": "Name updated.",
+      "nameUpdateError": "Couldn't update your name. Please try again.",
+      "emailSectionTitle": "Email",
+      "emailSectionDescription": "Change the email address associated with your account.",
+      "emailLabel": "Email",
+      "emailHelp": "Changing your email requires verifying your identity first.",
+      "changeEmailAction": "Change email",
+      "changeEmailDialogTitle": "Change your email",
+      "changeEmailDialogDescription": "We'll email a confirmation link to your current and new address — the change only takes effect once you confirm.",
+      "newEmailLabel": "New email",
+      "currentPasswordLabel": "Current password",
+      "changeEmailSubmit": "Send confirmation",
+      "changeEmailSubmitting": "Sending…",
+      "changeEmailSuccess": "Check both your inboxes — we've sent a confirmation link to each address.",
+      "changeEmailErrorInvalidPassword": "That password is incorrect.",
+      "changeEmailErrorSameEmail": "That's already your current email.",
+      "changeEmailErrorEmailInUse": "That email is already in use by another account."
     },
     "Security": {
       "metadata": { "title": "Security" },

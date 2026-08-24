@@ -20,6 +20,7 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"];
           mfa_enabled: boolean;
           display_name: string | null;
+          avatar_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -28,6 +29,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"];
           mfa_enabled?: boolean;
           display_name?: string | null;
+          avatar_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -36,6 +38,7 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"];
           mfa_enabled?: boolean;
           display_name?: string | null;
+          avatar_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };

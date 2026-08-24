@@ -26,9 +26,14 @@ import { UserMenu } from "./user-menu";
 type AppSidebarProps = {
   email: string;
   appName: string;
+  displayName?: string | null;
+  avatarUrl?: string | null;
 };
 
+// Profile first, matching the reference screenshot's ordering (see
+// openspec/specs/profile-settings/spec.md).
 const SETTINGS_LINKS = [
+  { href: "/dashboard/settings/profile", labelKey: "profile" },
   { href: "/dashboard/settings/security", labelKey: "security" },
   { href: "/dashboard/settings/billing", labelKey: "billing" },
 ] as const;
@@ -38,7 +43,7 @@ const SETTINGS_LINKS = [
  * as either a fixed desktop panel or a mobile slide-out sheet — one component, not the old
  * dashboard-nav.tsx/mobile-nav.tsx pair, so the two presentations can no longer drift apart.
  */
-export function AppSidebar({ email, appName }: AppSidebarProps) {
+export function AppSidebar({ email, appName, displayName, avatarUrl }: AppSidebarProps) {
   const t = useTranslations("Dashboard.nav");
   const tSettings = useTranslations("Settings.nav");
   const pathname = usePathname();
@@ -139,7 +144,7 @@ export function AppSidebar({ email, appName }: AppSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
-        <UserMenu email={email} />
+        <UserMenu email={email} displayName={displayName} avatarUrl={avatarUrl} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

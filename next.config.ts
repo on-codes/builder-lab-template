@@ -43,10 +43,11 @@ const supabaseOrigin = (() => {
 //   lib/supabase/client.ts creates a browser Supabase client that calls the Supabase Auth API
 //   directly from the browser. No Realtime/WebSocket usage anywhere in the codebase (grepped
 //   for .channel(/realtime/.subscribe() — none), so no wss: scheme is needed.
-// - img-src: 'self' plus data: — no remote images anywhere today (no images.remotePatterns
-//   configured; AvatarImage in components/ui/avatar.tsx exists but nothing renders it with a
-//   real src yet, only AvatarFallback with initials is used). data: covers inline data-URI
-//   icons. Revisit if a future change adds user-uploaded/remote avatars.
+// - img-src: 'self', data:, plus the Supabase project origin — user-uploaded profile pictures
+//   (see openspec/changes/add-profile-settings) are stored in a public Supabase Storage bucket
+//   and rendered directly via AvatarImage (components/ui/avatar.tsx) as a plain <img src>, not
+//   next/image, so no images.remotePatterns entry is needed alongside this. data: covers
+//   inline data-URI icons.
 // - font-src: 'self' — Geist (geist/font/sans, geist/font/mono, used in
 //   app/[locale]/layout.tsx) self-hosts its font files at build time; no Google Fonts CDN.
 // - frame-ancestors 'none' / form-action 'self' / base-uri 'self' / object-src 'none': no
@@ -58,7 +59,7 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""};
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data:;
+  img-src 'self' data:${supabaseOrigin ? ` ${supabaseOrigin}` : ""};
   font-src 'self';
   connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""};
   object-src 'none';
@@ -71,6 +72,20 @@ const cspHeader = `
   .trim();
 
 const nextConfig: NextConfig = {
+  // Next.js caps a Server Action request body at 1MB by default (see
+  // node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/
+  // serverActions.md). lib/actions/profile/avatar.ts enforces its own 5 MB cap
+  // (MAX_AVATAR_BYTES) on uploaded avatars, but without raising this default, Next itself
+  // would reject any request over 1MB before that code ever runs — silently making the 5 MB
+  // check dead code and turning any 1-5MB upload (which the client-side check and the
+  // "Up to 5 MB" copy both promise is fine) into a generic framework error instead of the
+  // app's own friendly "that file is too large" message. 6mb leaves headroom above 5MB for
+  // multipart/form-data overhead (boundaries, headers — Next's own docs estimate 10-20KB).
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "6mb",
+    },
+  },
   // Security headers — see .claude/skills/app-security/SKILL.md.
   async headers() {
     return [

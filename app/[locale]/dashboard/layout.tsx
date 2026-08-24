@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { redirect } from "@/i18n/navigation";
 import { requireUser, UnauthorizedError, type AuthedUser } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
 import { AppSidebar } from "./app-sidebar";
 
 type DashboardLayoutProps = {
@@ -44,6 +45,16 @@ export default async function DashboardLayout({ children, params }: DashboardLay
   const cookieStore = await cookies();
   const sidebarOpen = cookieStore.get(SIDEBAR_COOKIE_NAME)?.value !== "false";
 
+  // Best-effort — the topbar avatar/name are a nice-to-have, never worth failing the whole
+  // dashboard shell over. UserMenu falls back to email-initials the same way it always did if
+  // this comes back empty.
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, avatar_url")
+    .eq("id", user.id)
+    .single();
+
   return (
     <SidebarProvider defaultOpen={sidebarOpen}>
       {/* Keyboard/screen-reader users can jump straight past the nav — invisible until it
@@ -54,7 +65,12 @@ export default async function DashboardLayout({ children, params }: DashboardLay
       >
         {common("skipToContent")}
       </a>
-      <AppSidebar email={user.email} appName={common("appName")} />
+      <AppSidebar
+        email={user.email}
+        appName={common("appName")}
+        displayName={profile?.display_name}
+        avatarUrl={profile?.avatar_url}
+      />
       {/* The one container every dashboard page's content renders into — consistent
           max-width/padding regardless of what the page itself does. Individual sections
           (e.g. Settings) are still free to narrow further inside this, see
