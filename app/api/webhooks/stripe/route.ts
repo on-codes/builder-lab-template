@@ -1,4 +1,10 @@
 import type Stripe from "stripe";
+// Separate value import (aliased — see lib/stripe/client.ts's comment: the "stripe"
+// package's default export and its named type-namespace export are both called `Stripe`,
+// which oxlint flags if a default import reuses that identifier as a value binding). Only
+// used for the `instanceof StripeSDK.errors.StripeError` checks below; every other Stripe.*
+// reference in this file is a type, covered by the `import type` above.
+import StripeSDK from "stripe";
 import { NextResponse } from "next/server";
 import PaymentFailedEmail, * as paymentFailedTemplate from "@/emails/payment-failed";
 import SubscriptionReceiptEmail, * as subscriptionReceiptTemplate from "@/emails/subscription-receipt";
@@ -91,7 +97,7 @@ export async function POST(request: Request) {
     // billing action files.
     console.error(
       `Stripe webhook handler failed for ${event.type}`,
-      error instanceof Stripe.errors.StripeError
+      error instanceof StripeSDK.errors.StripeError
         ? { type: error.type, code: error.code, requestId: error.requestId }
         : error instanceof Error
           ? error.message

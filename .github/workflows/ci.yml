@@ -52,6 +52,14 @@ jobs:
         run: pnpm exec oxlint .
       - name: Format check (oxfmt)
         run: pnpm exec oxfmt --check .
+      # Some pages use Next's generated per-route prop types (e.g. LayoutProps<'/[locale]'>)
+      # — real types that only exist once Next has scanned the route tree. A fresh checkout
+      # has no .next/ directory yet (only `next build`/`next dev` create one, and this job
+      # runs neither), so `tsc --noEmit` alone fails with "Cannot find name 'LayoutProps'" on
+      # a clean CI runner even though the same command passes locally once you've run `next
+      # dev`/`next build` at least once. `next typegen` does only the type-generation part.
+      - name: Generate Next.js route types
+        run: pnpm exec next typegen
       - name: Type check
         run: pnpm typecheck
 
