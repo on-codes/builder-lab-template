@@ -157,12 +157,17 @@ function SessionRow({
   }
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <span>{session.userAgent ?? t("sessionUnknownDevice")}</span>
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      {/* min-w-0 lets this block shrink below its content size so the raw User-Agent string
+          below actually wraps inside the row instead of being held to its unshrunk width by
+          the sibling button; break-words is the backstop for a single unbroken token. Stacked
+          under the button below `sm` so the text gets the full row width on a narrow phone
+          instead of being squeezed into a fraction of it. */}
+      <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+          <span className="break-words">{session.userAgent ?? t("sessionUnknownDevice")}</span>
           {session.isCurrent && (
-            <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs font-medium">
+            <span className="bg-secondary text-secondary-foreground shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
               {t("sessionCurrent")}
             </span>
           )}
@@ -174,7 +179,7 @@ function SessionRow({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="self-start sm:self-auto">
             {t("sessionRevoke")}
           </Button>
         </DialogTrigger>

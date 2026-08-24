@@ -16,7 +16,12 @@ export function SettingsNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label={t("navLabel")} className="flex gap-4 border-b">
+    // overflow-x-auto is a safety net, not a fix for a problem visible today with 2 short
+    // tabs — it's here so a narrow phone screen or a longer future translation/extra tab
+    // degrades to a horizontal scroll instead of wrapping awkwardly or overflowing the page.
+    // flex-nowrap + shrink-0/whitespace-nowrap on each tab keep every label on one line so
+    // the strip scrolls as a unit rather than individual tabs wrapping internally.
+    <nav aria-label={t("navLabel")} className="flex flex-nowrap gap-4 overflow-x-auto border-b">
       {TABS.map((tab) => {
         const isActive = pathname === tab.href;
         return (
@@ -25,7 +30,7 @@ export function SettingsNav() {
             href={tab.href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "border-b-2 px-1 pb-3 text-sm font-medium transition-colors",
+              "shrink-0 border-b-2 px-1 pb-3 text-sm font-medium whitespace-nowrap transition-colors",
               isActive
                 ? "border-foreground text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground",

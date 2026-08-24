@@ -43,7 +43,11 @@ export default async function DashboardLayout({ children, params }: DashboardLay
       <header className="bg-background/95 supports-[backdrop-filter]:bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 md:px-6">
           <MobileNav />
-          <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
+          {/* min-w-0 lets this shrink below its natural width when the row is tight (mobile
+              menu button + nav links + account menu all need their own space) — without it, a
+              long product name (e.g. from /setup) wraps to a second line instead of eliding,
+              which can exceed the header's fixed h-14 height. */}
+          <Link href="/dashboard" className="min-w-0 truncate text-lg font-semibold tracking-tight">
             {common("appName")}
           </Link>
           <DashboardNav className="ml-6 hidden md:flex" />
