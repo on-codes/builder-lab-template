@@ -6,7 +6,29 @@
     "save": "Save changes",
     "back": "Back",
     "genericError": "Something went wrong. Please try again.",
-    "rateLimited": "Too many attempts. Please wait a few minutes and try again."
+    "rateLimited": "Too many attempts. Please wait a few minutes and try again.",
+    "skipToContent": "Skip to main content",
+    "close": "Close"
+  },
+  "Errors": {
+    "generic": {
+      "title": "Something went wrong",
+      "description": "We hit a snag loading this page. Try again, or head back home.",
+      "retryAction": "Try again",
+      "homeAction": "Go home"
+    },
+    "dashboard": {
+      "goToDashboardAction": "Go to dashboard"
+    }
+  },
+  "NotFound": {
+    "metadata": { "title": "Page not found" },
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or may have moved.",
+    "homeAction": "Go home",
+    "dashboard": {
+      "goToDashboardAction": "Go to dashboard"
+    }
   },
   "Validation": {
     "emailInvalid": "Enter a valid email address.",
@@ -133,8 +155,10 @@
     "welcomeTitle": "Welcome back",
     "welcomeDescription": "This is your dashboard home. As you add new features, their screens will show up here.",
     "nav": {
+      "navLabel": "Primary navigation",
       "home": "Dashboard",
       "settings": "Settings",
+      "openMenu": "Open menu",
       "signOut": "Sign out",
       "accountMenu": "Account menu"
     }

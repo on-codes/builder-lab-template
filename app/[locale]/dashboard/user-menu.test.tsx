@@ -47,17 +47,13 @@ describe("UserMenu", () => {
     signOutMock.mockClear();
   });
 
-  it("opens to show the email, a Settings link, and a sign-out action", async () => {
+  it("opens to show the email and a sign-out action", async () => {
     const user = userEvent.setup();
     render(<UserMenu email="jane@example.com" />);
 
     await user.click(screen.getByRole("button", { name: "accountMenu" }));
 
     expect(await screen.findByText("jane@example.com")).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "settings" })).toHaveAttribute(
-      "href",
-      "/dashboard/settings/security",
-    );
     expect(screen.getByRole("menuitem", { name: "signOut" })).toBeInTheDocument();
     expect(signOutMock).not.toHaveBeenCalled();
   });

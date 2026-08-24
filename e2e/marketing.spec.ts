@@ -50,3 +50,14 @@ test.describe("route protection (proxy.ts)", () => {
     await expect(page).toHaveURL(/\/login/);
   });
 });
+
+test.describe("not-found page", () => {
+  test("an unmatched route shows the friendly not-found page, not a framework default", async ({
+    page,
+  }) => {
+    const response = await page.goto("/this-page-does-not-exist");
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("link", { name: /go home/i })).toBeVisible();
+  });
+});
