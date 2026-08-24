@@ -72,6 +72,20 @@ const cspHeader = `
   .trim();
 
 const nextConfig: NextConfig = {
+  // Next.js caps a Server Action request body at 1MB by default (see
+  // node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/
+  // serverActions.md). lib/actions/profile/avatar.ts enforces its own 5 MB cap
+  // (MAX_AVATAR_BYTES) on uploaded avatars, but without raising this default, Next itself
+  // would reject any request over 1MB before that code ever runs — silently making the 5 MB
+  // check dead code and turning any 1-5MB upload (which the client-side check and the
+  // "Up to 5 MB" copy both promise is fine) into a generic framework error instead of the
+  // app's own friendly "that file is too large" message. 6mb leaves headroom above 5MB for
+  // multipart/form-data overhead (boundaries, headers — Next's own docs estimate 10-20KB).
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "6mb",
+    },
+  },
   // Security headers — see .claude/skills/app-security/SKILL.md.
   async headers() {
     return [

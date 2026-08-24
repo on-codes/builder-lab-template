@@ -47,7 +47,10 @@ export async function requestEmailChange(input: {
     const service = createServiceClient();
 
     try {
-      await checkRateLimit(service, `email-change:${user.id}`, 3, 60 * 60);
+      // Capped lower than the shared per-user email limit (5/hour, checkEmailSendLimit) on
+      // purpose — every successful request sends 2 emails, so this can never itself exhaust
+      // that shared cap and silently swallow a legitimate confirmation email.
+      await checkRateLimit(service, `email-change:${user.id}`, 2, 60 * 60);
     } catch (error) {
       if (error instanceof RateLimitError) return fail("RATE_LIMITED");
       throw error;

@@ -48,15 +48,27 @@ considered_: private bucket + signed URLs regenerated per page load — rejected
 complexity for data that was never sensitive in the first place (a picture the user chose to
 represent themselves publicly inside their own product).
 
-**Only the `select` (read) Storage policy is unconditionally open; `insert`/`update`/`delete`
-are scoped to the caller's own folder.** Object path convention: `avatars/<user_id>/<uuid>.<ext>`.
-Every write policy checks `(storage.foldername(name))[1] = auth.uid()::text`, so a user can
-never overwrite or delete another user's file even though anyone can _read_ any avatar URL.
-Uploads/removals in this template's own Server Actions additionally go through the
-`service_role` client (same convention `mfa-toggle.ts`/`sessions.ts` already use for writing to
-`profiles`) — the Storage RLS policies are what would stop a compromised browser-side token
-from writing outside its own folder, not what today's Server Actions rely on day-to-day, same
-layered reasoning as every other table in this template.
+**Every Storage policy — including `select` — is scoped to the caller's own folder;
+public reads happen at the bucket level, not through RLS.** Object path convention:
+`avatars/<user_id>/<uuid>.<ext>`. Every policy checks
+`(storage.foldername(name))[1] = auth.uid()::text`. This app's own avatar rendering
+(`getPublicUrl()`, a plain `<img src>`) never touches RLS at all — it's served straight from
+`/storage/v1/object/public/avatars/...`, which `storage.buckets.public = true` exposes
+unconditionally by design, independent of any `storage.objects` policy. What the `select`
+policy actually gates is the Storage API's other read paths (`list()`, `download()`,
+`createSignedUrl()`), which _are_ subject to RLS like any other table read. An earlier version
+of this policy left `select` unconditionally open (`using (bucket_id = 'avatars')`) on the
+assumption that only the "unguessable URL" needed protecting — that was wrong: it would have
+let anyone holding the (necessarily public) anon key call `list()` and enumerate every user's
+folder name (their `auth.uid()`) and avatar filename directly, without ever needing to guess a
+URL. Caught and fixed during security review before this shipped; scoping `select` to the
+caller's own folder like every other operation closes that without changing the public read
+path at all. Uploads/removals in this template's own Server Actions additionally go through
+the `service_role` client (same convention `mfa-toggle.ts`/`sessions.ts` already use for
+writing to `profiles`) — the Storage RLS policies are what would stop a compromised
+browser-side token from writing (or now, listing) outside its own folder, not what today's
+Server Actions rely on day-to-day, same layered reasoning as every other table in this
+template.
 
 **Avatar uploads use a fresh random filename per upload, never a fixed `avatar.<ext>`.** Two
 reasons: (1) browsers/CDNs aggressively cache image URLs, so reusing the same filename after a
@@ -121,6 +133,24 @@ just this one field.
   cleanup succeeding. → Mitigation: accepted — an orphaned old file costs a small amount of
   Storage and is invisible to the user (the `profiles.avatar_url` row already points at the new
   one); logged server-side so Claude can see how often it happens.
+- [Risk] `uploadAvatar`'s server-side type check (`AVATAR_EXTENSION_BY_TYPE`) validates the
+  `file.type` the browser reports, not the file's actual bytes — a client can construct a
+  `File`/`Blob` with any `type` string it likes, so this doesn't guarantee the uploaded bytes
+  are really a PNG/JPEG/WebP/GIF. → Mitigation: partial — only non-executable raster image
+  MIME types are ever allowed (no `image/svg+xml`, no document/script types), so this can't be
+  turned into script execution in a browser context the way an SVG/HTML upload could; the
+  bucket-level `allowed_mime_types`/`file_size_limit` added alongside this note are a second,
+  storage-engine-level check against the same declared (not sniffed) content type — belt and
+  suspenders with the app-level check, not a fix for spoofing. True content-sniffing (checking
+  magic bytes server-side before upload) would close this fully and is a reasonable follow-up,
+  deliberately not bundled into this change to avoid adding a new dependency unreviewed.
+- [Risk] Next.js caps a Server Action request body at 1MB by default. Without raising it,
+  `MAX_AVATAR_BYTES` (5 MB) in `lib/actions/profile/avatar.ts` would never actually be
+  reached — any upload over ~1MB fails with a generic framework error instead of this app's own
+  `FILE_TOO_LARGE` message, even though the UI's own copy ("Up to 5 MB") promises otherwise. →
+  Fixed alongside this change: `next.config.ts` now sets
+  `experimental.serverActions.bodySizeLimit: "6mb"` (5 MB + headroom for multipart overhead) so
+  the app-level check is actually the operative one.
 
 ## Migration Plan
 
