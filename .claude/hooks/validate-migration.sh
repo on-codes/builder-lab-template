@@ -25,7 +25,12 @@ while IFS= read -r file; do
   awk -v pat="$DESTRUCTIVE_PATTERN" '
     BEGIN { IGNORECASE=1 }
     {
-      if ($0 ~ pat) {
+      # Only the executable part of the line counts: a migration that merely *mentions*
+      # "truncate" or "drop column" in an explanatory comment is not destructive, and
+      # blocking it teaches people to distrust this check. Real statements still match.
+      code = $0
+      sub(/--.*/, "", code)
+      if (code ~ pat) {
         if (prev !~ /ALLOW-DESTRUCTIVE/) {
           print FILENAME ":" FNR ": " $0
         }
