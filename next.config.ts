@@ -43,10 +43,11 @@ const supabaseOrigin = (() => {
 //   lib/supabase/client.ts creates a browser Supabase client that calls the Supabase Auth API
 //   directly from the browser. No Realtime/WebSocket usage anywhere in the codebase (grepped
 //   for .channel(/realtime/.subscribe() — none), so no wss: scheme is needed.
-// - img-src: 'self' plus data: — no remote images anywhere today (no images.remotePatterns
-//   configured; AvatarImage in components/ui/avatar.tsx exists but nothing renders it with a
-//   real src yet, only AvatarFallback with initials is used). data: covers inline data-URI
-//   icons. Revisit if a future change adds user-uploaded/remote avatars.
+// - img-src: 'self', data:, plus the Supabase project origin — user-uploaded profile pictures
+//   (see openspec/changes/add-profile-settings) are stored in a public Supabase Storage bucket
+//   and rendered directly via AvatarImage (components/ui/avatar.tsx) as a plain <img src>, not
+//   next/image, so no images.remotePatterns entry is needed alongside this. data: covers
+//   inline data-URI icons.
 // - font-src: 'self' — Geist (geist/font/sans, geist/font/mono, used in
 //   app/[locale]/layout.tsx) self-hosts its font files at build time; no Google Fonts CDN.
 // - frame-ancestors 'none' / form-action 'self' / base-uri 'self' / object-src 'none': no
@@ -58,7 +59,7 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""};
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data:;
+  img-src 'self' data:${supabaseOrigin ? ` ${supabaseOrigin}` : ""};
   font-src 'self';
   connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""};
   object-src 'none';

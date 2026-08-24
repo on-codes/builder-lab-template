@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,22 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/actions/auth/sign-out";
+import { getInitials } from "@/lib/utils";
 
 type UserMenuProps = {
   email: string;
+  displayName?: string | null;
+  avatarUrl?: string | null;
 };
-
-function getInitials(email: string): string {
-  const [localPart] = email.split("@");
-  return localPart.slice(0, 2).toUpperCase();
-}
 
 /**
  * Topbar account menu — avatar trigger, email, a link to Settings, and sign-out. Client-side
  * because it needs interactivity (the dropdown open state and useTransition around the
  * sign-out Server Action); everything else in the dashboard shell stays server-rendered.
  */
-export function UserMenu({ email }: UserMenuProps) {
+export function UserMenu({ email, displayName, avatarUrl }: UserMenuProps) {
   const t = useTranslations("Dashboard.nav");
   const [isPending, startTransition] = useTransition();
 
@@ -46,7 +44,8 @@ export function UserMenu({ email }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full" aria-label={t("accountMenu")}>
           <Avatar>
-            <AvatarFallback>{getInitials(email)}</AvatarFallback>
+            {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
+            <AvatarFallback>{getInitials(displayName, email)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

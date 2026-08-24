@@ -67,4 +67,10 @@ describe("UserMenu", () => {
 
     expect(signOutMock).toHaveBeenCalledTimes(1);
   });
+
+  it("shows initials from the display name when one is set, not the email", () => {
+    render(<UserMenu email="jane@example.com" displayName="Ada Lovelace" />);
+
+    expect(screen.getByText("AL")).toBeInTheDocument();
+  });
 });

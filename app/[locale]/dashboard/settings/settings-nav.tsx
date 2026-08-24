@@ -4,9 +4,10 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-// Only tabs with a real page behind them — there's no Settings.nav.profile screen yet, so it
-// stays out of this list rather than linking somewhere that 404s.
+// Only tabs with a real page behind them. Profile first, matching the reference screenshot's
+// ordering (see openspec/changes/add-profile-settings).
 const TABS = [
+  { href: "/dashboard/settings/profile", labelKey: "profile" },
   { href: "/dashboard/settings/security", labelKey: "security" },
   { href: "/dashboard/settings/billing", labelKey: "billing" },
 ] as const;

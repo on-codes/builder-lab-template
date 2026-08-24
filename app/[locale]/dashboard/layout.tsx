@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import type * as React from "react";
 import { Link, redirect } from "@/i18n/navigation";
 import { requireUser, UnauthorizedError, type AuthedUser } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "./dashboard-nav";
 import { MobileNav } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
@@ -30,6 +31,16 @@ export default async function DashboardLayout({ children, params }: DashboardLay
 
   const common = await getTranslations("Common");
 
+  // Best-effort — the topbar avatar/name are a nice-to-have, never worth failing the whole
+  // dashboard shell over. UserMenu falls back to email-initials the same way it always did if
+  // this comes back empty.
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, avatar_url")
+    .eq("id", user.id)
+    .single();
+
   return (
     <div className="flex min-h-svh flex-col">
       {/* Keyboard/screen-reader users can jump straight past the nav — invisible until it
@@ -52,7 +63,11 @@ export default async function DashboardLayout({ children, params }: DashboardLay
           </Link>
           <DashboardNav className="ml-6 hidden md:flex" />
           <div className="ml-auto flex items-center gap-2">
-            <UserMenu email={user.email} />
+            <UserMenu
+              email={user.email}
+              displayName={profile?.display_name}
+              avatarUrl={profile?.avatar_url}
+            />
           </div>
         </div>
       </header>
