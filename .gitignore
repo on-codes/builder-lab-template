@@ -17,9 +17,17 @@ yarn.lock
 out/
 build/
 dist/
+*.tsbuildinfo
+.next-profiles/
 
 # Testing
 coverage/
+playwright-report/
+test-results/
+/blob-report/
+
+# React Email preview
+.react-email/
 
 # Misc
 .DS_Store

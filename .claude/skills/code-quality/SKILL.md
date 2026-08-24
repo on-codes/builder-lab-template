@@ -32,8 +32,8 @@ a one-off tool that isn't a dependency.
   "scripts": {
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
-    "format": "oxfmt --check .",
-    "format:fix": "oxfmt ."
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
   }
 }
 ```
@@ -44,7 +44,7 @@ a one-off tool that isn't a dependency.
    auto-runs `oxlint --fix` and `oxfmt` on the file(s) just touched, so drift never
    accumulates.
 2. **Before every push** — `.claude/hooks/pre-push-checks.sh` runs the full-repo `lint`,
-   `format`, and `test` scripts. A push is blocked if any of them fail.
+   `format:check`, `typecheck`, and `test` scripts. A push is blocked if any of them fail.
 3. **In CI** — `.github/workflows/ci.yml` re-runs the same checks on every PR so a red check
    is visible before merge, even if a hook was somehow bypassed.
 

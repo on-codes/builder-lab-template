@@ -1,0 +1,71 @@
+schema: spec-driven
+
+# Project context — shown to AI when creating artifacts, so every proposal already knows the
+# constraints instead of re-deriving or re-explaining them each time.
+context: |
+  BuilderLab Template — a production-grade, reusable SaaS boilerplate built for non-technical
+  founders working with Claude Code. Full rules live in /.claude/CLAUDE.md and
+  /.claude/GUARDRAILS.md — read those first; this is a summary for proposal-writing context.
+
+  Tech stack (don't deviate — see CLAUDE.md section 1):
+    Next.js 16 (App Router, Server Actions, Turbopack) + TypeScript strict
+    shadcn/ui (Radix primitives) + Tailwind CSS v4
+    TanStack Query v5 for client-side data fetching/cache
+    Supabase (Postgres, RLS, Auth, Storage, Edge Functions) — the only backend
+    Stripe (Checkout + Customer Portal + webhooks) — built-in subscription billing,
+      test mode by default
+    next-intl for i18n — English only today, architecture ready for more locales
+    React Email + Resend for transactional email
+    Vitest + React Testing Library for unit/integration tests, Playwright for E2E
+    oxlint + oxfmt for lint/format, pnpm as the only package manager
+
+  Conventions:
+    - Route groups: (marketing) public/SEO, (auth) unauthenticated flows, (dashboard)
+      authenticated app behind proxy.ts route protection.
+    - `proxy.ts` is Next.js 16's route-protection file (the `middleware.ts` name is
+      deprecated) — it does not protect Server Actions, so every Server Action re-checks
+      auth/role itself.
+    - Every table ships with Row Level Security enabled in the same migration that creates
+      it; migrations are additive-only (see CLAUDE.md section 5 and GUARDRAILS.md).
+    - Every user-facing string goes through the next-intl message catalog, never hardcoded.
+    - Every feature ships with at least one test before being considered done.
+    - The person using this template cannot debug SQL, read a stack trace, or evaluate a
+      security tradeoff themselves — proposals should be written so a plain-English summary
+      of them is enough for that person to approve or reject.
+
+# Per-artifact rules
+rules:
+  proposal:
+    - Every requirement needs at least one `#### Scenario:` Given/When/Then block — a
+      requirement without one isn't ready for review.
+    - Anything touching authentication, billing, or Row Level Security also needs a
+      design.md, not just a proposal.md (CLAUDE.md section 14).
+    - State plainly, near the top, what a non-technical project owner needs to know before
+      approving — what changes for their users, and any risk (a new permission, a new cost,
+      anything touching money or login).
+    - Check `.claude/GUARDRAILS.md` before proposing anything in its "never without
+      confirmation" list — flag it explicitly rather than assuming it's fine because it's
+      technically additive.
+  specs:
+    - Delta operations use ADDED / MODIFIED / REMOVED headers explicitly. A MODIFIED
+      operation must show the full new requirement text — never a bare header with no body,
+      and never silently drop scenarios the previous version had without calling that out.
+  tasks:
+    - Break tasks so each one maps to a single reviewable commit where practical.
+
+# Per-operation guidance (this schema only recognizes "apply" and "archive" as operation ids
+# — propose-time guidance lives in rules.proposal above instead)
+operations:
+  apply:
+    guidance:
+      - Follow the approved delta spec and design.md exactly; if reality forces a deviation,
+        stop and update the proposal first rather than silently drifting from it.
+      - Run the standard checks (lint, format, typecheck, tests — CLAUDE.md section 6)
+        before considering any task in the change complete.
+  archive:
+    guidance:
+      - Confirm every scenario in the delta spec actually holds in the finished code before
+        merging it into the living spec — "the tasks are checked off" is not the same thing
+        as "verified."
+      - Summarize the outcome in plain English suitable for relaying to a non-technical
+        project owner.

@@ -1,19 +1,14 @@
 ---
-description: Asks the initial question and builds the web dashboard skeleton from this template.
+description: Asks a few personalization questions and adapts this boilerplate for a new project.
 ---
 
-You are starting a new project from the BuilderLab Template. This template builds **one thing:
-a web dashboard** (Next.js + TypeScript + shadcn/ui + TanStack Query, deployed on Vercel).
+You are personalizing the BuilderLab Template for a new project — not building it from
+scratch. Auth, billing, email, i18n, a dashboard, and a marketing site already work out of the
+box; `/setup` adapts what's already here to this person's idea, it doesn't scaffold anything.
 Don't ask which platform — there is no mobile track. If the person asks for a mobile app,
 explain that this template doesn't cover it and offer to build the dashboard instead.
 
-## 1. Ask the one question that matters
-
-Ask the person, in plain English:
-
-> "In one sentence, what is the idea you want to validate?"
-
-## 2. Check the tools before running anything
+## 1. Check the tools before running anything
 
 - `node --version` must be **24 or newer** (Node 24 is the current LTS, and what CI and
   Vercel use). If it's older, stop and ask the person to install Node 24 LTS from nodejs.org —
@@ -24,55 +19,57 @@ Ask the person, in plain English:
 
 pnpm is this template's only package manager — never `npm`, never `yarn`.
 
-## 3. Scaffold (sequential — nothing else runs during this)
+## 2. Ask the personalization questions
 
-The scaffold owns the whole directory, and package installs can't overlap, so these two steps
-run alone, one after the other:
+Ask the person, in plain English, all at once:
 
-1. `pnpm create next-app@latest . --typescript --tailwind --app --eslint=false --use-pnpm`
-2. One single install for everything the template needs (one command, not four — parallel or
-   back-to-back installs risk corrupting `pnpm-lock.yaml`):
-   `pnpm add @tanstack/react-query && pnpm add -D oxlint oxfmt vitest`
-   Then initialise shadcn/ui: `pnpm dlx shadcn@latest init`
+> "A few quick questions to make this yours:
+>
+> 1. What's the product called? It shows up in page titles, emails, and the marketing site.
+> 2. This template ships with two demo pricing tiers, Pro and Business — keep both, or just
+>    one to start?
+> 3. Do you need a second language yet, or just English for now? (Just English is the normal
+>    answer — the plumbing for more languages is already built in for whenever you want it.)"
 
-## 4. Wire it up (three agents at once)
+## 3. Apply the answers
 
-Now that `node_modules` exists and nothing else needs installing, spawn these three subagents
-**in a single message**, each with `run_in_background: true` and a name. They touch disjoint
-files, so they're safe to run together (see section 12 of `.claude/CLAUDE.md`):
+- Update the product-name strings in `messages/en.json` — that's the one place in the app that
+  holds user-facing text (`.claude/CLAUDE.md` section 10).
+- Update the `title`/`description` in `app/layout.tsx`'s metadata to match.
+- If they only want one tier, drop the unused one from the plan config that maps a plan
+  identifier to a Stripe Price ID (`.claude/skills/stripe-billing/SKILL.md`) — leave the
+  billing plumbing itself in place either way, it costs nothing to keep.
+- If they want a second language starting today, treat it as its own follow-up feature (a new
+  `messages/<locale>.json` plus one config entry) rather than doing it here — otherwise leave
+  i18n as English-only for now.
 
-- **`tooling`** — owns `package.json` (nobody else edits it this round) and the tool configs.
-  Adds the `lint`, `lint:fix`, `format`, `format:fix` scripts
-  (`.claude/skills/code-quality/SKILL.md`) and the `test`/`test:watch` scripts plus the Vitest
-  config (`.claude/skills/testing/SKILL.md`). Also adds
-  `"engines": { "node": ">=24", "pnpm": ">=11.18.0" }` and sets
-  `"packageManager": "pnpm@X.Y.Z"` to the exact output of `pnpm --version` — that's what pins
-  the same pnpm on the person's machine, in CI, and on Vercel.
-- **`data`** — copies the reference files from `stacks/web/` into place (Supabase clients,
-  `middleware.ts`, `lib/rate-limit.ts`) and creates `supabase/migrations/` if missing, with the
-  first migration creating the initial tables **with RLS enabled from the start**
-  (`.claude/skills/supabase-security/SKILL.md` and `.claude/skills/safe-migrations/SKILL.md`).
-- **`env`** — copies `stacks/web/.env.example` to the root as `.env.example` and to
-  `.env.local`, confirms `.mcp.json` is at the root, and writes out (for you to relay) the
-  simple steps to get the real keys: Supabase dashboard → Project Settings → API. Never fills
-  in a real key itself. The Stripe block in `.env.example` stays empty — payments are off by
-  default (section 8 of `.claude/CLAUDE.md`), so never ask the person for Stripe keys during
-  setup.
+## 4. Set up `.env.local`
 
-## 5. Verify the combined result (you, not the agents)
+Remind the person to fill in `.env.local` from `.env.example` (copy it first if `.env.local`
+doesn't exist yet). Walk them through it in plain English, and keep the two categories
+straight:
 
-Wait for all three to report back, then run the checks yourself on the merged result:
+- **Safe for Claude to explain**: what each variable is for and exactly where in their own
+  Supabase / Stripe / Resend dashboard to find it. Claude can point at the right settings page
+  and describe what to copy.
+- **Secrets only the person can get, and only they should type**: the Supabase service_role
+  key, the Stripe secret key and webhook secret, the Resend API key, and anything else in that
+  file that isn't a public/publishable value. These come from the person's own accounts —
+  Claude never has them and never fills them in.
+
+## 5. Verify
+
+Run the standard checks and fix anything that fails before telling the person it's ready:
 
 - `pnpm exec oxlint .` and `pnpm exec oxfmt --check .`
+- `pnpm typecheck`
 - `pnpm test`
-- `bash .claude/hooks/check-secrets.sh`
 
-Fix anything that fails before moving on. An agent saying "done" isn't verification — the
-checks passing is. Commit `pnpm-lock.yaml` (never `package-lock.json` or `yarn.lock`).
+Passing checks are the verification, not "it looks right."
 
 ## 6. Wrap up
 
-Ask whether the 3 MCPs (GitHub, Vercel, Supabase) are connected; if not, explain how to
-connect each one. Don't mention Stripe — nobody needs a Stripe account to build here, and
-payments only come up if the idea actually charges money. Then give a short summary of what was created and the suggested next step
-(e.g. "create the first screen" or "define the first database table"), in plain English.
+Ask whether the 4 MCPs — GitHub, Vercel, Supabase, and Stripe — are connected; if not, explain
+how to connect each one. Stripe is expected too now, since billing ships built-in by default
+(section 13 of `.claude/CLAUDE.md`). Then give a short summary of what was personalized and
+the suggested next step, in plain English.

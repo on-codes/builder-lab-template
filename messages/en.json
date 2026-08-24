@@ -1,0 +1,344 @@
+{
+  "Common": {
+    "appName": "BuilderLab",
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "save": "Save changes",
+    "back": "Back",
+    "genericError": "Something went wrong. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes and try again."
+  },
+  "Validation": {
+    "emailInvalid": "Enter a valid email address.",
+    "passwordTooShort": "Password must be at least 12 characters.",
+    "passwordTooWeak": "This password is too easy to guess. Try adding another word or a few extra characters.",
+    "passwordBreached": "This password has appeared in a known data breach. Please choose a different one.",
+    "passwordsDontMatch": "Passwords don't match.",
+    "otpInvalid": "Enter the 6-digit code from your email.",
+    "required": "This field is required."
+  },
+  "Auth": {
+    "Login": {
+      "metadata": { "title": "Log in" },
+      "title": "Welcome back",
+      "description": "Log in to your account",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "forgotPassword": "Forgot your password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "invalidCredentials": "That email and password don't match an account.",
+      "verifyEmailFirst": "Check your inbox and verify your email before logging in."
+    },
+    "Signup": {
+      "metadata": { "title": "Sign up" },
+      "title": "Create your account",
+      "description": "Start building on top of the foundation — auth, billing, and a dashboard are already here.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "haveAccount": "Already have an account?",
+      "logInLink": "Log in",
+      "checkEmail": "Check your email to verify your account before logging in.",
+      "termsNotice": "By continuing, you agree to our Terms and Privacy Policy."
+    },
+    "ForgotPassword": {
+      "metadata": { "title": "Reset your password" },
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a link to reset your password.",
+      "emailLabel": "Email",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "checkEmail": "If an account exists for that email, a reset link is on its way.",
+      "backToLogin": "Back to login"
+    },
+    "ResetPassword": {
+      "metadata": { "title": "Set a new password" },
+      "title": "Set a new password",
+      "description": "Choose a new password for your account.",
+      "passwordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "submit": "Update password",
+      "submitting": "Updating…",
+      "success": "Your password has been updated. You can log in now.",
+      "invalidLink": "This reset link is invalid or has expired. Request a new one.",
+      "requestNewLink": "Request a new link"
+    },
+    "VerifyMfa": {
+      "metadata": { "title": "Enter your code" },
+      "title": "Check your email",
+      "description": "We emailed a 6-digit code. It expires in {minutes} minutes.",
+      "codeLabel": "6-digit code",
+      "submit": "Verify",
+      "submitting": "Verifying…",
+      "resend": "Didn't get a code? Resend",
+      "resendCooldown": "You can request a new code in {seconds}s",
+      "resendSuccess": "We've sent a new code to your email.",
+      "invalidCode": "That code is incorrect. Try again.",
+      "expiredCode": "That code has expired. Request a new one.",
+      "tooManyAttempts": "Too many incorrect attempts. Request a new code.",
+      "sessionExpired": "Your login session has expired. Please log in again."
+    }
+  },
+  "Emails": {
+    "verifyEmail": {
+      "subject": "Verify your email",
+      "preview": "Confirm your email to finish creating your account",
+      "heading": "Verify your email",
+      "body": "Click the button below to verify your email and finish creating your account.",
+      "action": "Verify email",
+      "expiry": "This link expires in {hours} hours.",
+      "notYou": "If you didn't create an account, you can safely ignore this email."
+    },
+    "resetPassword": {
+      "subject": "Reset your password",
+      "preview": "Reset your password",
+      "heading": "Reset your password",
+      "body": "Click the button below to choose a new password.",
+      "action": "Reset password",
+      "expiry": "This link expires in {minutes} minutes.",
+      "notYou": "If you didn't request this, you can safely ignore this email — your password won't change."
+    },
+    "mfaCode": {
+      "subject": "Your verification code",
+      "preview": "Your BuilderLab verification code",
+      "heading": "Your verification code",
+      "body": "Enter this code to finish logging in:",
+      "expiry": "This code expires in {minutes} minutes.",
+      "notYou": "If this wasn't you, someone may have your password — change it as soon as possible."
+    },
+    "subscriptionReceipt": {
+      "subject": "Your receipt",
+      "preview": "Payment received — thank you",
+      "heading": "Payment received",
+      "body": "Thanks — we've received your payment of {amount}.",
+      "viewInvoice": "View invoice",
+      "footer": "This is an automated receipt for your records."
+    },
+    "paymentFailed": {
+      "subject": "Payment failed",
+      "preview": "We couldn't process your last payment",
+      "heading": "Payment failed",
+      "body": "We weren't able to process your most recent payment. Update your payment method to keep your subscription active.",
+      "action": "Update payment method",
+      "footer": "If you believe this is a mistake, please check your card details in the billing portal."
+    }
+  },
+  "Dashboard": {
+    "metadata": { "title": "Dashboard" },
+    "welcomeTitle": "Welcome back",
+    "welcomeDescription": "This is your dashboard home. As you add new features, their screens will show up here.",
+    "nav": {
+      "home": "Dashboard",
+      "settings": "Settings",
+      "signOut": "Sign out",
+      "accountMenu": "Account menu"
+    }
+  },
+  "Settings": {
+    "nav": {
+      "navLabel": "Settings navigation",
+      "profile": "Profile",
+      "security": "Security",
+      "billing": "Billing"
+    },
+    "Security": {
+      "metadata": { "title": "Security" },
+      "title": "Security",
+      "mfaSectionTitle": "Two-factor authentication",
+      "mfaSectionDescription": "Require a 6-digit code emailed to you at every login, in addition to your password.",
+      "mfaEnabled": "Enabled",
+      "mfaDisabled": "Disabled",
+      "mfaEnableAction": "Enable",
+      "mfaDisableAction": "Disable",
+      "mfaToggleError": "Couldn't update two-factor authentication. Please try again.",
+      "sessionsSectionTitle": "Active sessions",
+      "sessionsSectionDescription": "Devices and browsers currently logged in to your account.",
+      "sessionsEmpty": "No active sessions.",
+      "sessionUnknownDevice": "Unknown device",
+      "sessionCurrent": "This device",
+      "sessionRevoke": "Log out",
+      "sessionRevoked": "Session ended.",
+      "sessionRevokeError": "Couldn't end that session. Please try again.",
+      "sessionCreatedAt": "Signed in {relativeTime}",
+      "sessionRevokeConfirmTitle": "Log out this session?",
+      "sessionRevokeConfirmDescription": "This session will lose access right away. You can always log back in from that device.",
+      "sessionRevokeConfirmDescriptionCurrent": "You're logged in on this device right now. You'll be signed out immediately and will need to log in again."
+    },
+    "Billing": {
+      "metadata": { "title": "Billing" },
+      "title": "Billing",
+      "plansSectionTitle": "Choose a plan",
+      "plansSectionDescription": "Subscribe to unlock the full dashboard.",
+      "currentPlanSectionTitle": "Your plan",
+      "currentPlanSectionDescription": "Manage your subscription, payment method, and invoices.",
+      "unknownPlan": "Subscription",
+      "status": {
+        "incomplete": "Incomplete",
+        "incomplete_expired": "Expired",
+        "trialing": "Trial",
+        "active": "Active",
+        "past_due": "Payment past due",
+        "canceled": "Canceled",
+        "unpaid": "Unpaid",
+        "paused": "Paused"
+      },
+      "renewsOn": "Renews {date}",
+      "endsOn": "Ends {date}",
+      "manageAction": "Manage subscription",
+      "manageActionLoading": "Opening billing portal…",
+      "subscribeAction": "Subscribe",
+      "subscribeActionLoading": "Starting checkout…",
+      "checkoutError": "Couldn't start checkout. Please try again.",
+      "portalError": "Couldn't open the billing portal. Please try again.",
+      "checkoutSuccessToast": "Subscription active — welcome aboard!",
+      "checkoutCanceledToast": "Checkout was canceled — you weren't charged."
+    }
+  },
+  "Marketing": {
+    "nav": {
+      "pricing": "Pricing",
+      "about": "About",
+      "logIn": "Log in",
+      "signUp": "Sign up"
+    },
+    "footer": {
+      "copyright": "© {year} {appName}. All rights reserved.",
+      "terms": "Terms",
+      "privacy": "Privacy"
+    },
+    "Home": {
+      "metadata": { "title": "Launch your SaaS faster" },
+      "heroTitle": "Your SaaS, without the months of setup.",
+      "heroSubtitle": "BuilderLab gives you working sign-up, login, subscriptions, and a dashboard from day one — so you can spend your time on what makes your product different, not on the plumbing every product needs.",
+      "heroCta": "Get started free",
+      "featuresSectionTitle": "Everything a SaaS needs, already wired together",
+      "featuresSectionDescription": "No developer to hire, no tools to stitch together — it's already built in and ready to use.",
+      "features": {
+        "auth": {
+          "title": "Secure login, built in",
+          "description": "Sign-up, login, password reset, and two-factor email verification all work on day one — nobody has to build a login screen or think about password security."
+        },
+        "billing": {
+          "title": "Get paid from day one",
+          "description": "Accept subscription payments and let customers manage their own plan and billing details — no payment code to write."
+        },
+        "dashboard": {
+          "title": "A dashboard, ready to grow",
+          "description": "Your users land in a real, working dashboard the moment they sign up. Add your own screens on top whenever you're ready."
+        },
+        "i18n": {
+          "title": "Ready for the world",
+          "description": "Built to support more languages from the start, so reaching customers in another country is never a rewrite — just a translation."
+        }
+      }
+    },
+    "Pricing": {
+      "metadata": { "title": "Pricing" },
+      "title": "Simple, flexible pricing",
+      "subtitle": "Create your free account, then choose the plan that fits — you can change or cancel any time.",
+      "priceholder": "See exact pricing at checkout",
+      "cta": "Get started",
+      "note": "Sign up first — you'll choose a plan and enter payment details securely once you're inside your dashboard.",
+      "plans": {
+        "pro": { "tagline": "For solo builders and small projects." },
+        "business": { "tagline": "For growing teams that need more room." }
+      }
+    },
+    "About": {
+      "metadata": { "title": "About" },
+      "title": "About",
+      "body": "BuilderLab is a ready-made foundation for building a SaaS product, not a company or a product of its own. Accounts, subscriptions, and a working dashboard are already built in, so whoever builds on top of it can spend their time on what makes their product different — not on rebuilding the parts every SaaS needs. Everything here, including this page, is a placeholder meant to be replaced."
+    },
+    "Terms": {
+      "metadata": { "title": "Terms of Service" },
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: August 23, 2026",
+      "notice": {
+        "title": "Placeholder text — not legal advice",
+        "body": "This page is a generic starting point, not a real Terms of Service. Have a lawyer review and customize it for your business, your customers, and the laws that apply to you before you rely on it."
+      },
+      "sections": {
+        "acceptance": {
+          "title": "Acceptance of terms",
+          "body": "By creating an account or otherwise using this service, you agree to these Terms of Service. If you don't agree with any part of these terms, please don't use the service."
+        },
+        "useOfService": {
+          "title": "Using the service",
+          "body": "You agree to use this service only for lawful purposes and in a way that doesn't infringe on the rights of, or restrict or inhibit the use and enjoyment of, this service by anyone else. You're responsible for keeping your account credentials secure and for all activity that happens under your account."
+        },
+        "subscriptions": {
+          "title": "Subscriptions and payments",
+          "body": "Some features may require a paid subscription. Payments are processed securely by a third-party payment provider — we never see or store your full card details. Subscriptions renew automatically until canceled; you can cancel or change your plan at any time from your account settings."
+        },
+        "termination": {
+          "title": "Termination",
+          "body": "We may suspend or terminate your access to the service if you violate these terms. You may stop using the service and close your account at any time."
+        },
+        "liability": {
+          "title": "Disclaimer and limitation of liability",
+          "body": "This service is provided \"as is,\" without warranties of any kind, express or implied. To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential damages arising from your use of the service."
+        },
+        "changes": {
+          "title": "Changes to these terms",
+          "body": "We may update these terms from time to time. If we make material changes, we'll let you know before they take effect. Continuing to use the service after changes take effect means you accept the updated terms."
+        },
+        "contact": {
+          "title": "Contact us",
+          "body": "Questions about these terms? Reach out at support@example.com."
+        }
+      }
+    },
+    "Privacy": {
+      "metadata": { "title": "Privacy Policy" },
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: August 23, 2026",
+      "notice": {
+        "title": "Placeholder text — not legal advice",
+        "body": "This page is a generic starting point, not a real Privacy Policy. Have a lawyer review and customize it for what your product actually collects and how it's used before you rely on it."
+      },
+      "sections": {
+        "collection": {
+          "title": "Information we collect",
+          "body": "We collect the information you give us directly, such as your email address and password when you create an account, along with basic information about how you use the service, like sign-in activity and device or browser type."
+        },
+        "use": {
+          "title": "How we use your information",
+          "body": "We use your information to provide and improve the service, to communicate with you (like account, security, and billing emails), to keep the service secure, and to meet our legal obligations."
+        },
+        "sharing": {
+          "title": "Sharing your information",
+          "body": "We don't sell your personal information. We share it only with trusted service providers who help us run the service — for example, to process payments or deliver email — and only to the extent needed for them to do that work."
+        },
+        "cookies": {
+          "title": "Cookies",
+          "body": "We use cookies and similar technologies to keep you signed in and remember your preferences. You can control cookies through your browser settings, though some parts of the service may not work correctly without them."
+        },
+        "security": {
+          "title": "Data retention and security",
+          "body": "We keep your information only as long as needed to provide the service or as required by law, and we use reasonable technical and organizational measures to protect it. No method of storage or transmission is completely secure, though."
+        },
+        "rights": {
+          "title": "Your choices",
+          "body": "You can access or update most of your account information directly from your account settings, and you can request that we delete your account and its data at any time."
+        },
+        "children": {
+          "title": "Children's privacy",
+          "body": "This service isn't directed at children, and we don't knowingly collect personal information from children."
+        },
+        "changes": {
+          "title": "Changes to this policy",
+          "body": "We may update this policy from time to time. If we make material changes, we'll let you know before they take effect."
+        },
+        "contact": {
+          "title": "Contact us",
+          "body": "Questions about this policy? Reach out at support@example.com."
+        }
+      }
+    }
+  }
+}

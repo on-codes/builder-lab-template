@@ -6,66 +6,142 @@ on:
   push:
     branches: [main, develop]
 
+# Dummy-but-well-formed values so a build/e2e run works out of the box on this template's own
+# repo (which has no real Supabase/Stripe project of its own) while still picking up real
+# values automatically once a project cloned from this template configures its own GitHub
+# Actions secrets — see docs/environment-variables.md. Mirrors vitest.setup.ts's dummy values
+# exactly, so "passes locally" and "passes in CI" mean the same thing.
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://example.supabase.co' }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'test-anon-key' }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || 'test-service-role-key' }}
+  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100' }}
+  OTP_HASH_SECRET: ${{ secrets.OTP_HASH_SECRET || 'test-otp-secret' }}
+  RESEND_API_KEY: ${{ secrets.RESEND_API_KEY || 'test-resend-key' }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_dummy' }}
+  STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET || 'whsec_test_dummy' }}
+  STRIPE_PRICE_ID_PRO: ${{ secrets.STRIPE_PRICE_ID_PRO || 'price_test_pro' }}
+  STRIPE_PRICE_ID_BUSINESS: ${{ secrets.STRIPE_PRICE_ID_BUSINESS || 'price_test_business' }}
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_dummy' }}
+
 jobs:
-  quality-checks:
-    name: Lint, format, tests, secrets
+  # Every job below shares this same first four steps (checkout, lock-file presence, pnpm,
+  # node+cache) — duplicated per job rather than factored into a composite action so each job
+  # stays a plain, readable list of steps; GitHub Actions doesn't support step-level includes
+  # without a separate composite-action file, which is more indirection than this template
+  # needs for five short jobs.
+
+  lint-format-typecheck:
+    name: Lint, format, types
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Is there an app yet? A freshly created repo has no package.json until /setup runs,
-      # and the steps below would fail on an empty project.
-      - name: Detect app
-        id: app
-        run: |
-          if [ -f package.json ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      # Without this, a missing lock file surfaces as a confusing cache error further down.
       - name: Check the lock file was committed
-        if: steps.app.outputs.present == 'true'
         run: |
           if [ ! -f pnpm-lock.yaml ]; then
             echo "::error::pnpm-lock.yaml is missing. Run 'pnpm install' locally and commit the pnpm-lock.yaml file it creates."
             exit 1
           fi
-
-      # pnpm is this project's package manager. The version comes from the
-      # "packageManager" field in package.json, so CI and your machine always match.
       - uses: pnpm/action-setup@v4
-        if: steps.app.outputs.present == 'true'
-
-      # Node 24 is the current LTS and what this template standardises on, so CI, the
-      # person's machine, and Vercel all build on the same runtime.
       - uses: actions/setup-node@v4
-        if: steps.app.outputs.present == 'true'
         with:
           node-version: 24
           cache: pnpm
-
-      - name: Install dependencies
-        if: steps.app.outputs.present == 'true'
-        run: pnpm install --frozen-lockfile
-
+      - run: pnpm install --frozen-lockfile
       - name: Lint (oxlint)
-        if: steps.app.outputs.present == 'true'
         run: pnpm exec oxlint .
-
       - name: Format check (oxfmt)
-        if: steps.app.outputs.present == 'true'
         run: pnpm exec oxfmt --check .
+      # Some pages use Next's generated per-route prop types (e.g. LayoutProps<'/[locale]'>)
+      # — real types that only exist once Next has scanned the route tree. A fresh checkout
+      # has no .next/ directory yet (only `next build`/`next dev` create one, and this job
+      # runs neither), so `tsc --noEmit` alone fails with "Cannot find name 'LayoutProps'" on
+      # a clean CI runner even though the same command passes locally once you've run `next
+      # dev`/`next build` at least once. `next typegen` does only the type-generation part.
+      - name: Generate Next.js route types
+        run: pnpm exec next typegen
+      - name: Type check
+        run: pnpm typecheck
 
-      - name: Unit tests
-        if: steps.app.outputs.present == 'true'
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Unit tests (Vitest)
         run: pnpm test
 
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # A real build, not just typecheck — this is what actually caught a Stripe SDK typing
+      # issue that `tsc --noEmit` alone missed (module-eval-time env var use, route-collection
+      # failures). See the "Phase 4/7/8" commit on this branch for the concrete example.
+      - name: Build (next build)
+        run: pnpm build
+
+  e2e-smoke:
+    name: E2E smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright's browser
+        run: pnpm exec playwright install --with-deps chromium
+      # Without real Supabase/Stripe secrets configured (true for this template's own repo —
+      # see the top-level `env:` block), e2e/golden-path.spec.ts's tests skip themselves
+      # (test.skip(!hasRealSupabaseCredentials(), ...)) and only e2e/marketing.spec.ts's
+      # structural smoke tests actually run. A project cloned from this template that adds
+      # its own repo secrets gets the full golden path here automatically, no workflow change
+      # needed — see docs/environment-variables.md.
+      - name: E2E tests (Playwright)
+        run: pnpm test:e2e
+      - name: Upload Playwright report
+        if: "!cancelled()"
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  security:
+    name: Secrets, migrations, dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Secret scan
         run: bash .claude/hooks/check-secrets.sh
-
       - name: Migration safety check
         run: bash .claude/hooks/validate-migration.sh
+      # High/critical advisories only — low/moderate ones in transitive dev-only deps
+      # shouldn't block every PR; Claude still reviews the full `pnpm audit` output whenever
+      # this fails rather than just relaxing the threshold further.
+      - name: Dependency audit
+        run: pnpm audit --audit-level=high
