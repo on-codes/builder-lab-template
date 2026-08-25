@@ -45,9 +45,13 @@ Ask the person, in plain English, all at once:
 
 ## 4. Set up `.env.local`
 
-Remind the person to fill in `.env.local` from `.env.example` (copy it first if `.env.local`
-doesn't exist yet). Walk them through it in plain English, and keep the two categories
-straight:
+If `.env.local` doesn't exist yet, the services aren't connected at all — point the person at
+`PROMPT.md`, which provisions Supabase, Stripe, Resend and Vercel end to end, rather than
+walking them through the file variable by variable here.
+
+If it does exist, check nothing is missing against `docs/environment-variables.md` (this repo
+has no `.env.example` — that document is its substitute, and it explains why). Walk them
+through anything blank in plain English, keeping the two categories straight:
 
 - **Safe for Claude to explain**: what each variable is for and exactly where in their own
   Supabase / Stripe / Resend dashboard to find it. Claude can point at the right settings page

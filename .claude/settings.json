@@ -12,7 +12,10 @@
       "Bash(git diff*)",
       "Bash(git add*)",
       "Bash(git log*)",
-      "Bash(supabase *)"
+      "Bash(supabase *)",
+      "Read(./.env.local)",
+      "Write(./.env.local)",
+      "Edit(./.env.local)"
     ],
     "ask": ["Bash(git commit*)", "Bash(git push*)", "Bash(git merge*)"],
     "deny": [
