@@ -15,8 +15,8 @@ or CI/CD, because all of that is already built, wired together, and tested.
 ## How to use it
 
 1. Download the latest release as a .zip and unzip it into your project folder:
-   **https://github.com/on-codes/builder-lab-template/releases/tag/1.0**
-   ([direct download](https://github.com/on-codes/builder-lab-template/archive/refs/tags/1.0.zip))
+   **https://github.com/on-codes/builder-lab-template/releases/tag/2.0**
+   ([direct download](https://github.com/on-codes/builder-lab-template/archive/refs/tags/2.0.zip))
    — no git clone needed, so your project starts its own clean git history instead of
    inheriting this template's.
 2. Open the project in Claude Code.
