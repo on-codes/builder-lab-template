@@ -8,9 +8,10 @@ description: Use this skill when adding any public-facing route/action, any feat
 ## Secrets
 
 - All secrets live in `.env.local` (git-ignored) locally, and in the Vercel project's
-  environment variables for deploys — never hardcoded, never committed. `.env.example`
-  lists the variable **names** only, with placeholder values, so the person knows what to
-  fill in.
+  environment variables for deploys — never hardcoded, never committed. This repo ships no
+  `.env.example` (the permission rules block Claude from any `.env*` file);
+  `docs/environment-variables.md` is its substitute and lists every variable, what it's for,
+  and where its value comes from.
 - `.claude/hooks/check-secrets.sh` scans every diff before commit/push for patterns that look
   like live keys (`sk_live_`, `sk_test_`, long base64/hex strings assigned to variables named
   like secrets, Supabase JWTs, AWS-style keys, etc.) and blocks the operation if found outside

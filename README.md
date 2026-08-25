@@ -24,15 +24,19 @@ or CI/CD, because all of that is already built, wired together, and tested.
    already in `.mcp.json` — Claude Code will ask you to authenticate each one the first time
    it is used). Stripe defaults to **test mode** — nobody needs to charge a real card to build,
    test, and deploy.
-4. `pnpm install`, copy `.env.example` to `.env.local` and fill in your own Supabase/Stripe/
-   Resend keys (Claude Code will walk you through exactly where to get each one), then
-   `pnpm dev`.
+4. Paste **`PROMPT.md`** into Claude Code and let it run. That single prompt takes the project
+   from "just unzipped" to live on the internet: it installs the dependencies, creates your
+   Supabase database and applies every migration, sets up Stripe's test-mode plans and
+   webhook, wires up Resend for email, writes `.env.local`, pushes to GitHub, and deploys to
+   Vercel. You'll be asked for a handful of keys from your own accounts along the way —
+   Claude tells you exactly where to click for each one.
 5. Type `/setup` and answer a couple of quick questions (product name, which demo pricing
    tiers to keep) — Claude personalizes the boilerplate for your idea. Then just describe the
    feature you want next; Claude builds it on top of the foundation below.
 
-`PROMPT.md` is the prompt to paste into Claude Code if you're starting from an empty folder
-instead — it tells Claude to fetch and install this template from the same .zip.
+`docs/environment-variables.md` explains every environment variable in plain English — what it
+is, where it comes from, and which ones are secrets. Read it if you'd rather set things up by
+hand than let `PROMPT.md` do it.
 
 You don't need to understand what's inside `.claude/` or `openspec/` to get started — those
 folders are for Claude, not for you. What matters: **Claude already knows how to behave in
